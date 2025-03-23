@@ -1,4 +1,4 @@
-package com.app.paytrack.view
+package com.app.paytrack.view.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,15 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.app.paytrack.view.graphs.OnBoardingNavGraph
 import com.app.paytrack.view.ui.theme.PayTrackTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             PayTrackTheme {
-
+                OnBoardingNavGraph(navController = rememberNavController())
             }
         }
     }
