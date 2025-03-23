@@ -1,4 +1,4 @@
-package com.app.paytrack.ui.theme
+package com.app.paytrack.view.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

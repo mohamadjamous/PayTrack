@@ -1,4 +1,4 @@
-package com.app.paytrack.ui.theme
+package com.app.paytrack.view.ui.theme
 
 import android.app.Activity
 import android.os.Build
