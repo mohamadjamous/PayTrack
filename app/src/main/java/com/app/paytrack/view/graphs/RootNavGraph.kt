@@ -8,22 +8,26 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.app.paytrack.model.Graph
 import com.app.paytrack.model.Screen
 import com.app.paytrack.view.screens.OnBoardingScreen
 import com.app.paytrack.view.screens.WelcomeScreen
+import kotlinx.serialization.Serializable
 
 @Composable
-fun RootNavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
+fun RootNavGraph(
+    modifier: Modifier = Modifier,
+    navController: NavHostController
+) {
 
     val context = LocalContext.current
     val firstTime = getSharedPreferences(context = context)
-    println("FirstTimeValue: $firstTime")
 
     // Check if it's first time
     val startDestination = if (firstTime == 0 || firstTime == -1 ){
-        Screen.Welcome.route
+        Screen.Welcome
     }else{
-        Screen.SignIn.route
+        Screen.SignIn
     }
 
     if (firstTime == 0 || firstTime == -1){
@@ -32,27 +36,26 @@ fun RootNavGraph(modifier: Modifier = Modifier, navController: NavHostController
 
     NavHost(
         navController = navController,
-        route = Graph.ROOT,
-        startDestination = Graph.AUTH){
+        startDestination = Graph.Auth){
 
         // On boarding nav graph
-        navigation(
-            route = Graph.AUTH,
+        navigation<Graph.Auth>(
             startDestination = startDestination
         ){
-            composable(route = Screen.Welcome.route){
-                WelcomeScreen()
+
+            composable<Screen.Welcome>{
+
+                WelcomeScreen(navController = navController)
             }
 
-            composable(route = Screen.OnBoarding.route){
+            composable<Screen.OnBoarding>{
                 OnBoardingScreen()
             }
 
-            composable(route = Screen.SignIn.route){
+            composable<Screen.SignIn>{
                 OnBoardingScreen()
             }
         }
-
 
     }
 
@@ -69,8 +72,5 @@ fun getSharedPreferences(context: Context): Int {
 }
 
 
-object Graph{
-    const val ROOT = "root_graph"
-    const val AUTH = "auth_graph"
-    const val MAIN = "main_graph"
-}
+
+
