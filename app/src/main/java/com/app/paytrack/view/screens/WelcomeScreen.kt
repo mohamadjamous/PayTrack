@@ -6,5 +6,8 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun WelcomeScreen(modifier: Modifier = Modifier) {
+
+
     Text(text = "Welcome Screen")
+
 }
