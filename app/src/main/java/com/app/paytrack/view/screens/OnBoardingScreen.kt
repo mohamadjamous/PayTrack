@@ -85,10 +85,7 @@ fun OnBoardingScreen(
             .padding(top = 10.dp)
             .padding(10.dp)
     ) {
-
-        BackButton {
-            navController.popBackStack()
-        }
+        
 
         Text(
             modifier = Modifier.padding(start = 15.dp, top = 15.dp),
