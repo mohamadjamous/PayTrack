@@ -2,4 +2,13 @@
     <string name="app_name">PayTrack</string>
     <string name="welcome_text">Welcome To PayTrack</string>
     <string name="next">Next</string>
+    <string name="benefits_paytrack">Benefits Of PayTrack</string>
+    <string name="benefits_paytrack_desc">Easily track expenses, set budgets, and gain financial insights to stay in control of your money.</string>
+    <string name="payment_insights">Payment Insights</string>
+    <string name="simple_reports">Simple Reports</string>
+    <string name="easy_tracking">Easy Tracking</string>
+    <string name="full_control">Full Control</string>
+    <string name="hassle_free">Hassle-Free</string>
+    <string name="offline_access">Offline Access</string>
+    <string name="get_started">Get Started</string>
 </resources>

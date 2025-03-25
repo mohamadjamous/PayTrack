@@ -2,6 +2,7 @@ package com.app.paytrack.view.graphs
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -12,6 +13,9 @@ import com.app.paytrack.model.Graph
 import com.app.paytrack.model.Screen
 import com.app.paytrack.view.screens.OnBoardingScreen
 import com.app.paytrack.view.screens.WelcomeScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -49,11 +53,15 @@ fun RootNavGraph(
             }
 
             composable<Screen.OnBoarding>{
-                OnBoardingScreen()
+                OnBoardingScreen(
+                    navController = navController
+                )
             }
 
             composable<Screen.SignIn>{
-                OnBoardingScreen()
+                OnBoardingScreen(
+                    navController = navController
+                )
             }
         }
 

@@ -35,7 +35,7 @@ fun WelcomeScreen(
 ) {
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(10.dp),
         verticalArrangement = Arrangement.Center
     ) {
 
