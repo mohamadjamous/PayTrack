@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.paytrack.R
@@ -25,15 +27,14 @@ fun CustomTextField(
     value: String,
     hint: String = "",
     leadingIcon: ImageVector? = null,
+    passwordVisible: Boolean = false,
     onValueChange: (String) -> Unit
 ) {
 
     OutlinedTextField(
         modifier = modifier,
         value = value,
-        onValueChange = {
-
-        },
+        onValueChange = onValueChange,
         placeholder = {
             Text(text = hint)
         },
@@ -46,14 +47,15 @@ fun CustomTextField(
                     tint = colorResource(id = R.color.dark_green)
                 )
         },
+        visualTransformation = if (!passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        shape = RoundedCornerShape(12.dp),
         colors = TextFieldDefaults.colors(
-            unfocusedTextColor = Color.Gray,
-            focusedTextColor = colorResource(id = R.color.gray),
+            focusedTextColor = colorResource(id = R.color.dark_green),
+            unfocusedTextColor = colorResource(id = R.color.dark_green),
             unfocusedContainerColor = Color.White,
             focusedContainerColor = Color.White,
             focusedIndicatorColor = colorResource(id = R.color.dark_green),
-        ),
-        shape = RoundedCornerShape(12.dp)
+        )
 
     )
 
@@ -68,6 +70,7 @@ fun CustomTextFieldPreview(modifier: Modifier = Modifier) {
         onValueChange = {
 
         },
-        leadingIcon = Icons.Outlined.Email
+        leadingIcon = Icons.Outlined.Email,
+        passwordVisible = true
     )
 }

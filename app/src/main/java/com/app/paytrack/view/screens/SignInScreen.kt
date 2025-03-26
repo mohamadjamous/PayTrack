@@ -91,7 +91,8 @@ fun SignInScreen(
                 modifier = Modifier.fillMaxWidth(),
                 value = password,
                 hint = stringResource(id = R.string.password),
-                leadingIcon = Icons.Outlined.Lock
+                leadingIcon = Icons.Outlined.Lock,
+                passwordVisible = true
             ) {
                 password = it
             }
