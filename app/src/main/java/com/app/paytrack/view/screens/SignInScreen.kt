@@ -65,7 +65,7 @@ fun SignInScreen(
         Text(
             text = stringResource(id = R.string.sign_in),
             fontWeight = FontWeight.Bold,
-            fontSize = 30.sp,
+            fontSize = 35.sp,
             color = colorResource(id = R.color.dark_green)
         )
 
@@ -116,14 +116,14 @@ fun SignInScreen(
         }
 
         OrDivider(
-            modifier = Modifier.padding(top = 30.dp)
+            modifier = Modifier.padding(top = 35.dp)
         )
 
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 50.dp),
+                .padding(top = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -139,7 +139,7 @@ fun SignInScreen(
             Spacer(modifier = Modifier.height(25.dp))
 
             Image(
-                modifier = Modifier.size(25.dp),
+                modifier = Modifier.size(35.dp),
                 painter = painterResource(id = R.drawable.google_icon),
                 contentDescription = null
             )

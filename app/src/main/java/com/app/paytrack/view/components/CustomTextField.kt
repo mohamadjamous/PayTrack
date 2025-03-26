@@ -48,8 +48,10 @@ fun CustomTextField(
         },
         colors = TextFieldDefaults.colors(
             unfocusedTextColor = Color.Gray,
-            focusedTextColor = colorResource(id = R.color.dark_green),
-            unfocusedContainerColor = Color.White
+            focusedTextColor = colorResource(id = R.color.gray),
+            unfocusedContainerColor = Color.White,
+            focusedContainerColor = Color.White,
+            focusedIndicatorColor = colorResource(id = R.color.dark_green),
         ),
         shape = RoundedCornerShape(12.dp)
 

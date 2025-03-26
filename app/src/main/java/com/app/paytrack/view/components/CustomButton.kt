@@ -40,12 +40,12 @@ fun CustomButton(
     ){
 
        Text(
-            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+            modifier = Modifier.padding(top = 6.dp, bottom = 6.dp),
             text = text,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             color = Color.White,
-            fontSize = 17.sp
+            fontSize = 20.sp
         )
 
     }
