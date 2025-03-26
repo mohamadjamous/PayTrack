@@ -11,4 +11,11 @@
     <string name="hassle_free">Hassle-Free</string>
     <string name="offline_access">Offline Access</string>
     <string name="get_started">Get Started</string>
+    <string name="sign_in">Sign In</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="sign_in_with">Sign In With</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
 </resources>

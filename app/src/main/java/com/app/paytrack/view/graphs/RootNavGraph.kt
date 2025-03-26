@@ -12,6 +12,7 @@ import androidx.navigation.navigation
 import com.app.paytrack.model.Graph
 import com.app.paytrack.model.Screen
 import com.app.paytrack.view.screens.OnBoardingScreen
+import com.app.paytrack.view.screens.SignInScreen
 import com.app.paytrack.view.screens.WelcomeScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +60,7 @@ fun RootNavGraph(
             }
 
             composable<Screen.SignIn>{
-                OnBoardingScreen(
+                SignInScreen(
                     navController = navController
                 )
             }
