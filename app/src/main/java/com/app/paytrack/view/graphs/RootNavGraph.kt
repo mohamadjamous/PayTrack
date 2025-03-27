@@ -34,6 +34,7 @@ import kotlinx.serialization.Serializable
 import androidx.lifecycle.lifecycleScope
 import com.app.paytrack.R
 import com.app.paytrack.view.main.HomeScreen
+import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 
 
@@ -125,6 +126,65 @@ fun RootNavGraph(
                 }
 
                 SignInScreen(
+                    navController = navController,
+                    state = state,
+                    onGoogleSignInClick = {
+                        lifecycleScope.launch {
+                            val signInIntentSender = googleAuthUiClient.signIn()
+                            launcher.launch(
+                                IntentSenderRequest.Builder(
+                                    signInIntentSender ?: return@launch
+                                ).build()
+                            )
+                        }
+                    }
+                )
+            }
+
+
+            composable<Screen.SignUp> {
+
+                val viewModel = viewModel<SignInViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                LaunchedEffect(key1 = Unit) {
+                    if (googleAuthUiClient.getSignedInUser() != null) {
+
+                        // Navigate to graph instead of one composable screen
+                        navController.navigate(Graph.Main)
+                    }
+                }
+
+                val launcher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartIntentSenderForResult(),
+                    onResult = { result ->
+                        if (result.resultCode == RESULT_OK) {
+
+                            lifecycleScope.launch {
+                                val signInResult = googleAuthUiClient.signInWithIntent(
+                                    intent = result.data ?: return@launch
+                                )
+                                viewModel.onSignInResult(signInResult)
+                            }
+                        }
+                    }
+                )
+
+                LaunchedEffect(key1 = state.isSignInSuccessful) {
+                    if (state.isSignInSuccessful) {
+                        Toast.makeText(
+                            context,
+                            "Sign in successful!",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        // Navigate to graph instead of one composable screen
+                        navController.navigate(Graph.Main)
+                        viewModel.resetState()
+                    }
+                }
+
+                SignUpScreen(
                     navController = navController,
                     state = state,
                     onGoogleSignInClick = {

@@ -2,6 +2,7 @@ package com.app.paytrack.view.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.paytrack.R
+import com.app.paytrack.model.Screen
 import com.app.paytrack.view.components.CustomButton
 import com.app.paytrack.view.components.CustomTextField
 import com.app.paytrack.view.sign_in.SignInState
@@ -189,7 +191,10 @@ fun SignInScreen(
 
                 Text(
                     modifier = Modifier
-                        .padding(top = 10.dp, start  = 5.dp),
+                        .padding(top = 10.dp, start  = 5.dp)
+                        .clickable {
+                                   navController.navigate(Screen.SignUp)
+                        },
                     text = stringResource(id = R.string.sign_up),
                     color = colorResource(id = R.color.gray),
                     fontWeight = FontWeight.Bold,
