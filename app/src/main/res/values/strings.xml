@@ -20,4 +20,7 @@
     <string name="sign_up">Sign Up</string>
     <string name="web_client_id">27877996845-5e3sum0ltbqbpr678af25sncic6gov58.apps.googleusercontent.com</string>
     <string name="sign_in_successfull">Sign in successful!</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="already_have_account">Already have an account?</string>
 </resources>
