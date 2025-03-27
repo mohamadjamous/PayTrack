@@ -54,13 +54,13 @@ fun SignInScreen(
     navController: NavController,
     state: SignInState,
     onGoogleSignInClick: () -> Unit
-    ) {
+) {
 
     val context = LocalContext.current
 
     LaunchedEffect(state.signInError) {
 
-        state.signInError?.let {error ->
+        state.signInError?.let { error ->
             Toast.makeText(
                 context,
                 error,
@@ -124,12 +124,14 @@ fun SignInScreen(
 
         Text(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp),
-            textAlign = TextAlign.End,
+                .padding(top = 10.dp)
+                .align(Alignment.End)
+                .clickable {
+                    navController.navigate(Screen.ForgotPassword)
+                },
             text = stringResource(id = R.string.forgot_password),
             color = colorResource(id = R.color.dark_green),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
 
@@ -138,7 +140,7 @@ fun SignInScreen(
         CustomButton(
             text = stringResource(id = R.string.sign_in).uppercase(Locale.ROOT)
         ) {
-            
+
         }
 
         OrDivider(
@@ -161,7 +163,7 @@ fun SignInScreen(
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp
             )
-            
+
             Spacer(modifier = Modifier.height(25.dp))
 
             IconButton(
@@ -180,7 +182,7 @@ fun SignInScreen(
 
             Row(
                 modifier = Modifier.padding(top = 20.dp)
-            ){
+            ) {
                 Text(
                     modifier = Modifier
                         .padding(top = 10.dp),
@@ -191,9 +193,9 @@ fun SignInScreen(
 
                 Text(
                     modifier = Modifier
-                        .padding(top = 10.dp, start  = 5.dp)
+                        .padding(top = 10.dp, start = 5.dp)
                         .clickable {
-                                   navController.navigate(Screen.SignUp)
+                            navController.navigate(Screen.SignUp)
                         },
                     text = stringResource(id = R.string.sign_up),
                     color = colorResource(id = R.color.gray),
@@ -230,7 +232,6 @@ fun OrDivider(modifier: Modifier = Modifier) {
         Divider(modifier = Modifier.weight(1f), color = Color.Gray, thickness = 2.dp)
     }
 }
-
 
 
 @Preview(showSystemUi = true)

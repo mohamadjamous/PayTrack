@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -92,7 +93,7 @@ fun ForgotPasswordScreen(
                    .padding(top = 30.dp, start = 10.dp, end = 10.dp),
                value = email,
                hint = stringResource(id = R.string.email),
-               leadingIcon = Icons.Outlined.Lock,
+               leadingIcon = Icons.Outlined.Email,
                passwordVisible = false,
            ) {
                email = it

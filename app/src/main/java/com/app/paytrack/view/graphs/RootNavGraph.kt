@@ -34,6 +34,7 @@ import kotlinx.serialization.Serializable
 import androidx.lifecycle.lifecycleScope
 import com.app.paytrack.R
 import com.app.paytrack.view.main.HomeScreen
+import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 
@@ -199,6 +200,11 @@ fun RootNavGraph(
                     }
                 )
             }
+
+            composable<Screen.ForgotPassword>{
+                ForgotPasswordScreen(navController = navController)
+            }
+
         }
 
         navigation<Graph.Main>(

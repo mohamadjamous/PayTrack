@@ -18,4 +18,12 @@ sealed class Screen(val route: String) {
 
     @Serializable
     object Home
+
+    @Serializable
+    object ForgotPassword
+
+    @Serializable
+    object VerifyOtp
+
+
 }
