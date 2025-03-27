@@ -15,4 +15,7 @@ sealed class Screen(val route: String) {
 
     @Serializable
     object SignUp
+
+    @Serializable
+    object Home
 }
