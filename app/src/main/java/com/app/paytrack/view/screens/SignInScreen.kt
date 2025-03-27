@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -112,7 +114,8 @@ fun SignInScreen(
         Spacer(modifier = Modifier.height(40.dp))
 
         CustomButton(
-            text = stringResource(id = R.string.sign_in).toUpperCase(Locale.ROOT)) {
+            text = stringResource(id = R.string.sign_in).uppercase(Locale.ROOT)
+        ) {
             
         }
 
@@ -139,10 +142,16 @@ fun SignInScreen(
             
             Spacer(modifier = Modifier.height(25.dp))
 
-            Image(
+            IconButton(
                 modifier = Modifier.size(35.dp),
-                painter = painterResource(id = R.drawable.google_icon),
-                contentDescription = null
+                content = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.google_icon),
+                        contentDescription = null)
+                },
+                onClick = {
+
+                }
             )
 
             Row(

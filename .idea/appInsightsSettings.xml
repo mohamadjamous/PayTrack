@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.app.paytrack" />
+                  <option name="mobileSdkAppId" value="1:27877996845:android:45e9cc37a1af8d19207ba4" />
+                  <option name="projectId" value="paytrack-91cab" />
+                  <option name="projectNumber" value="27877996845" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
