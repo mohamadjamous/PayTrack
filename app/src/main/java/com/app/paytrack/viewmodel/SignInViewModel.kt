@@ -1,6 +1,8 @@
-package com.app.paytrack.view.sign_in
+package com.app.paytrack.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.app.paytrack.view.sign_in.SignInResult
+import com.app.paytrack.view.sign_in.SignInState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

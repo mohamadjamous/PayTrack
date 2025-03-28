@@ -8,12 +8,10 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,17 +24,14 @@ import com.app.paytrack.model.Screen
 import com.app.paytrack.view.screens.OnBoardingScreen
 import com.app.paytrack.view.screens.SignInScreen
 import com.app.paytrack.view.screens.WelcomeScreen
-import com.app.paytrack.view.sign_in.SignInViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.app.paytrack.viewmodel.SignInViewModel
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import androidx.lifecycle.lifecycleScope
-import com.app.paytrack.R
 import com.app.paytrack.view.main.HomeScreen
 import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
+import com.app.paytrack.viewmodel.SignUpViewModel
 
 
 @Composable
@@ -145,7 +140,7 @@ fun RootNavGraph(
 
             composable<Screen.SignUp> {
 
-                val viewModel = viewModel<SignInViewModel>()
+                val viewModel = viewModel<SignUpViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
                 LaunchedEffect(key1 = Unit) {
@@ -197,7 +192,8 @@ fun RootNavGraph(
                                 ).build()
                             )
                         }
-                    }
+                    },
+                    viewModel = viewModel
                 )
             }
 
