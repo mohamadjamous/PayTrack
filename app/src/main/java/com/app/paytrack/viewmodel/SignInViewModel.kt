@@ -64,4 +64,22 @@ class SignInViewModel: ViewModel() {
     }
 
 
+    fun sendVerificationLink(email: String){
+
+        viewModelScope.launch {
+
+            val result = repo.sendPasswordResetEmail(email)
+
+            if (result){
+
+                _state.value = SignInState(isPasswordLinkSuccessful = true)
+            } else {
+                _state.value = SignInState(isPasswordLinkSuccessful = false)
+                _state.value = SignInState(passwordLinkError = "Something went wrong while sending link")
+            }
+        }
+
+    }
+
+
 }

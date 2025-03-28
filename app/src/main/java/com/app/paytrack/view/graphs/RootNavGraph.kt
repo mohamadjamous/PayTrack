@@ -182,7 +182,15 @@ fun RootNavGraph(
             }
 
             composable<Screen.ForgotPassword> {
-                ForgotPasswordScreen(navController = navController)
+
+                val viewModel = viewModel<SignInViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                ForgotPasswordScreen(
+                    navController = navController,
+                    state = state,
+                    viewModel = viewModel
+                )
             }
 
         }

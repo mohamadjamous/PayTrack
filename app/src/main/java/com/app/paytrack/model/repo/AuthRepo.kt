@@ -80,6 +80,33 @@ class AuthRepo {
         }
     }
 
+    suspend fun sendPasswordResetEmail(
+        email: String
+    ): Boolean {
+        try {
+
+            val result = suspendCoroutine { continuation ->
+                firebaseAuth.sendPasswordResetEmail(email)
+                    .addOnSuccessListener {
+                        println(tag + "password link success")
+                        continuation.resume(true)
+                    }
+                    .addOnFailureListener {
+                        println(tag + "password link failure ${it.message}")
+                        continuation.resume(false)
+                    }
+            }
+
+            return result
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+            println(tag + "password link exception ${e.message}")
+            return false
+        }
+    }
+
     fun logout() {
         firebaseAuth.signOut()
     }
