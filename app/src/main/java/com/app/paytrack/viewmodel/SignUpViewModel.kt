@@ -24,9 +24,10 @@ class SignUpViewModel : ViewModel() {
 
         // Create user account with email password
         viewModelScope.launch {
-            val isCreated = repo.register(email = email, password = password)
+            val isCreated = repo.createUser(email = email, password = password)
 
             if (isCreated) {
+                // Save user in FireStore
                 _state.value = SignInState(isSignInSuccessful = true)
             } else {
                 _state.value = SignInState(isSignInSuccessful = false)

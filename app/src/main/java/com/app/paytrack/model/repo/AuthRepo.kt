@@ -22,7 +22,7 @@ class AuthRepo {
         return false
     }
 
-    suspend fun register(
+    suspend fun createUser(
         email: String, password: String
     ): Boolean {
         try {
@@ -33,7 +33,7 @@ class AuthRepo {
                     .addOnSuccessListener {
                         println(tag + "register success")
                         CoroutineScope(Dispatchers.IO).launch {
-                            continuation.resume(login(email, password))
+                            continuation.resume(loginUser(email, password))
                         }
                     }
                     .addOnFailureListener {
@@ -53,7 +53,7 @@ class AuthRepo {
         }
     }
 
-    suspend fun login(
+    suspend fun loginUser(
         email: String, password: String
     ): Boolean {
         try {

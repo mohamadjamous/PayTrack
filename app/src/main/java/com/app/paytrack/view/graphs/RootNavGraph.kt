@@ -84,13 +84,6 @@ fun RootNavGraph(
                 val viewModel = viewModel<SignInViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
-                LaunchedEffect(key1 = Unit) {
-                    if (googleAuthUiClient.getSignedInUser() != null) {
-
-                        // Navigate to graph instead of one composable screen
-                        navController.navigate(Graph.Main)
-                    }
-                }
 
                 val launcher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -107,19 +100,6 @@ fun RootNavGraph(
                     }
                 )
 
-                LaunchedEffect(key1 = state.isSignInSuccessful) {
-                    if (state.isSignInSuccessful) {
-                        Toast.makeText(
-                            context,
-                            "Sign in successful!",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        // Navigate to graph instead of one composable screen
-                        navController.navigate(Graph.Main)
-                        viewModel.resetState()
-                    }
-                }
 
                 SignInScreen(
                     navController = navController,
@@ -133,7 +113,9 @@ fun RootNavGraph(
                                 ).build()
                             )
                         }
-                    }
+                    },
+                    googleAuthUiClient = googleAuthUiClient,
+                    viewModel = viewModel
                 )
             }
 
@@ -143,13 +125,6 @@ fun RootNavGraph(
                 val viewModel = viewModel<SignUpViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
-                LaunchedEffect(key1 = Unit) {
-                    if (googleAuthUiClient.getSignedInUser() != null) {
-
-                        // Navigate to graph instead of one composable screen
-                        navController.navigate(Graph.Main)
-                    }
-                }
 
                 val launcher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -165,6 +140,15 @@ fun RootNavGraph(
                         }
                     }
                 )
+
+
+                LaunchedEffect(key1 = Unit) {
+                    if (googleAuthUiClient.getSignedInUser() != null) {
+
+                        // Navigate to graph instead of one composable screen
+                        navController.navigate(Graph.Main)
+                    }
+                }
 
                 LaunchedEffect(key1 = state.isSignInSuccessful) {
                     if (state.isSignInSuccessful) {
@@ -197,7 +181,7 @@ fun RootNavGraph(
                 )
             }
 
-            composable<Screen.ForgotPassword>{
+            composable<Screen.ForgotPassword> {
                 ForgotPasswordScreen(navController = navController)
             }
 

@@ -3,6 +3,7 @@ package com.app.paytrack.view.screens
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,10 +42,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.paytrack.R
+import com.app.paytrack.model.Graph
 import com.app.paytrack.model.Screen
 import com.app.paytrack.view.components.CustomButton
+import com.app.paytrack.view.components.CustomDialog
 import com.app.paytrack.view.components.CustomTextField
+import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.view.sign_in.SignInState
+import com.app.paytrack.viewmodel.SignInViewModel
 import java.util.Locale
 
 
@@ -53,21 +58,12 @@ fun SignInScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     state: SignInState,
-    onGoogleSignInClick: () -> Unit
+    onGoogleSignInClick: () -> Unit,
+    googleAuthUiClient: GoogleAuthUiClient? = null,
+    viewModel: SignInViewModel? = null
 ) {
 
     val context = LocalContext.current
-
-    LaunchedEffect(state.signInError) {
-
-        state.signInError?.let { error ->
-            Toast.makeText(
-                context,
-                error,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
 
 
     var email by remember {
@@ -78,137 +74,197 @@ fun SignInScreen(
         mutableStateOf("")
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 40.dp, start = 20.dp, end = 20.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(state.signInError) {
+
+        state.signInError?.let { error ->
+            showDialog = false
+            Toast.makeText(
+                context,
+                error,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
 
-        Text(
-            text = stringResource(id = R.string.sign_in),
-            fontWeight = FontWeight.Bold,
-            fontSize = 35.sp,
-            color = colorResource(id = R.color.dark_green)
-        )
+    LaunchedEffect(key1 = Unit) {
+        if (googleAuthUiClient?.getSignedInUser() != null) {
+            showDialog = false
+            // Navigate to graph instead of one composable screen
+            navController.navigate(Graph.Main)
+        }
+    }
+    LaunchedEffect(key1 = state.isSignInSuccessful) {
+        if (state.isSignInSuccessful) {
+            showDialog = false
+            Toast.makeText(
+                context,
+                "Sign in successful!",
+                Toast.LENGTH_LONG
+            ).show()
+
+            // Navigate to graph instead of one composable screen
+            navController.navigate(Graph.Main)
+            viewModel?.resetState()
+        }
+    }
+
+
+    Box(modifier = Modifier.fillMaxSize()) {
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 50.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(top = 40.dp, start = 20.dp, end = 20.dp),
+            horizontalAlignment = Alignment.Start
         ) {
 
-            CustomTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = email,
-                hint = stringResource(id = R.string.email),
-                leadingIcon = Icons.Outlined.Email
+
+            Text(
+                text = stringResource(id = R.string.sign_in),
+                fontWeight = FontWeight.Bold,
+                fontSize = 35.sp,
+                color = colorResource(id = R.color.dark_green)
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                email = it
+
+                CustomTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = email,
+                    hint = stringResource(id = R.string.email),
+                    leadingIcon = Icons.Outlined.Email
+                ) {
+                    email = it
+                }
+
+                Spacer(modifier = Modifier.height(35.dp))
+
+                CustomTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = password,
+                    hint = stringResource(id = R.string.password),
+                    leadingIcon = Icons.Outlined.Lock,
+                    passwordVisible = true
+                ) {
+                    password = it
+                }
             }
-
-            Spacer(modifier = Modifier.height(35.dp))
-
-            CustomTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = password,
-                hint = stringResource(id = R.string.password),
-                leadingIcon = Icons.Outlined.Lock,
-                passwordVisible = true
-            ) {
-                password = it
-            }
-        }
-
-        Text(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .align(Alignment.End)
-                .clickable {
-                    navController.navigate(Screen.ForgotPassword)
-                },
-            text = stringResource(id = R.string.forgot_password),
-            color = colorResource(id = R.color.dark_green),
-            fontWeight = FontWeight.Bold,
-        )
-
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        CustomButton(
-            text = stringResource(id = R.string.sign_in).uppercase(Locale.ROOT)
-        ) {
-
-        }
-
-        OrDivider(
-            modifier = Modifier.padding(top = 35.dp)
-        )
-
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 30.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
 
             Text(
                 modifier = Modifier
-                    .padding(top = 10.dp),
-                text = stringResource(id = R.string.sign_in_with),
-                color = colorResource(id = R.color.gray),
+                    .padding(top = 10.dp)
+                    .align(Alignment.End)
+                    .clickable {
+                        navController.navigate(Screen.ForgotPassword)
+                    },
+                text = stringResource(id = R.string.forgot_password),
+                color = colorResource(id = R.color.dark_green),
                 fontWeight = FontWeight.Bold,
-                fontSize = 17.sp
             )
 
-            Spacer(modifier = Modifier.height(25.dp))
 
-            IconButton(
-                content = {
-                    Icon(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(id = R.drawable.google),
-                        contentDescription = null,
-                        tint = Color.Unspecified
-                    )
-                },
-                onClick = {
-                    onGoogleSignInClick()
-                }
-            )
+            Spacer(modifier = Modifier.height(40.dp))
 
-            Row(
-                modifier = Modifier.padding(top = 20.dp)
+            CustomButton(
+                text = stringResource(id = R.string.sign_in).uppercase(Locale.ROOT)
             ) {
+
+                showDialog = true
+                val result = viewModel?.validateLoginInput(email = email, password = password)
+
+                // Valid user input
+                if (result == null) {
+                    viewModel?.signInUserEmailPassword(email = email, password = password)
+                } else {
+                    showDialog = false
+                    Toast.makeText(
+                        context,
+                        result,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            OrDivider(
+                modifier = Modifier.padding(top = 35.dp)
+            )
+
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
                 Text(
                     modifier = Modifier
                         .padding(top = 10.dp),
-                    text = stringResource(id = R.string.dont_have_account),
-                    color = colorResource(id = R.color.gray),
-                    fontSize = 17.sp
-                )
-
-                Text(
-                    modifier = Modifier
-                        .padding(top = 10.dp, start = 5.dp)
-                        .clickable {
-                            navController.navigate(Screen.SignUp)
-                        },
-                    text = stringResource(id = R.string.sign_up),
+                    text = stringResource(id = R.string.sign_in_with),
                     color = colorResource(id = R.color.gray),
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp
                 )
+
+                Spacer(modifier = Modifier.height(25.dp))
+
+                IconButton(
+                    content = {
+                        Icon(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(id = R.drawable.google),
+                            contentDescription = null,
+                            tint = Color.Unspecified
+                        )
+                    },
+                    onClick = {
+                        showDialog = true
+                        onGoogleSignInClick()
+                    }
+                )
+
+                Row(
+                    modifier = Modifier.padding(top = 20.dp)
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 10.dp),
+                        text = stringResource(id = R.string.dont_have_account),
+                        color = colorResource(id = R.color.gray),
+                        fontSize = 17.sp
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 10.dp, start = 5.dp)
+                            .clickable {
+                                navController.navigate(Screen.SignUp)
+                            },
+                        text = stringResource(id = R.string.sign_up),
+                        color = colorResource(id = R.color.gray),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp
+                    )
+                }
+
             }
+
 
         }
 
+        CustomDialog(show = showDialog)
 
     }
-
 }
 
 @Composable
