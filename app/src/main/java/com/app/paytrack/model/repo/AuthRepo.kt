@@ -1,6 +1,10 @@
 package com.app.paytrack.model.repo
 
+import com.app.paytrack.model.Collections
+import com.app.paytrack.model.User
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -12,6 +16,7 @@ class AuthRepo {
 
     private val tag = "AuthRepository: "
     private val firebaseAuth = FirebaseAuth.getInstance()
+    private val fireStore = FirebaseFirestore.getInstance()
 
     fun isLoggedIn(): Boolean {
         if (firebaseAuth.currentUser != null) {
@@ -106,6 +111,36 @@ class AuthRepo {
             return false
         }
     }
+
+
+    suspend fun saveUser(
+        user: User
+    ): Boolean {
+        try {
+
+            val result = suspendCoroutine { continuation ->
+                fireStore.collection(Collections.Users.value)
+                    .add(user)
+                    .addOnSuccessListener {
+                        println(tag + "user saved successfully")
+                        continuation.resume(true)
+                    }
+                    .addOnFailureListener {
+                        println(tag + "error saving user ${it.message}")
+                        continuation.resume(false)
+                    }
+            }
+
+            return result
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+            println(tag + "error saving user ${e.message}")
+            return false
+        }
+    }
+
 
     fun logout() {
         firebaseAuth.signOut()

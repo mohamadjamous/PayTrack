@@ -2,6 +2,7 @@ package com.app.paytrack.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.paytrack.model.User
 import com.app.paytrack.model.repo.AuthRepo
 import com.app.paytrack.view.sign_in.SignInResult
 import com.app.paytrack.view.sign_in.SignInState
@@ -27,8 +28,17 @@ class SignUpViewModel : ViewModel() {
             val isCreated = repo.createUser(email = email, password = password)
 
             if (isCreated) {
+
                 // Save user in FireStore
-                _state.value = SignInState(isSignInSuccessful = true)
+               val isUserSaved =  repo.saveUser(User(name = name, email = email, isGoogleAccount = false))
+
+                if (isUserSaved) {
+                    _state.value = SignInState(isSignInSuccessful = true)
+                } else {
+                    _state.value = SignInState(isSignInSuccessful = false)
+                    _state.value = SignInState(signInError = "Error Creating Account!")
+                }
+
             } else {
                 _state.value = SignInState(isSignInSuccessful = false)
                 _state.value = SignInState(signInError = "Error Creating Account!")

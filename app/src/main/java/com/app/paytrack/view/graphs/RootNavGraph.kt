@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +47,7 @@ fun RootNavGraph(
     val firstTime = getSharedPreferences(context = context)
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleScope = remember(lifecycleOwner) { lifecycleOwner.lifecycleScope }
+    val navAnimationSpeed = 700
 
 
     // Check if it's first time
@@ -79,7 +82,14 @@ fun RootNavGraph(
                 )
             }
 
-            composable<Screen.SignIn> {
+            composable<Screen.SignIn>(
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End,
+                        tween(navAnimationSpeed)
+                    )
+                }
+            ) {
 
                 val viewModel = viewModel<SignInViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
@@ -120,11 +130,17 @@ fun RootNavGraph(
             }
 
 
-            composable<Screen.SignUp> {
+            composable<Screen.SignUp>(
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        tween(navAnimationSpeed)
+                    )
+                }
+            ) {
 
                 val viewModel = viewModel<SignUpViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
-
 
                 val launcher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartIntentSenderForResult(),

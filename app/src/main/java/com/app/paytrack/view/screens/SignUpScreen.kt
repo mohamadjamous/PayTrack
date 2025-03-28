@@ -97,7 +97,7 @@ fun SignUpScreen(
             navController.navigate(Screen.Home)
         }
     }
-     
+
 
     Box(modifier = Modifier.fillMaxSize()) {
 
