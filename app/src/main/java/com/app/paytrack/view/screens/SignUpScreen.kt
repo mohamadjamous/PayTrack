@@ -229,6 +229,7 @@ fun SignUpScreen(
                         )
                     },
                     onClick = {
+                        showDialog = true
                         onGoogleSignInClick()
                     }
                 )
