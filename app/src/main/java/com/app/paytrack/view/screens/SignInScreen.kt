@@ -98,20 +98,18 @@ fun SignInScreen(
             navController.navigate(Graph.Main)
         }
     }
-    LaunchedEffect(key1 = state.isSignInSuccessful) {
+
+    LaunchedEffect(state.isSignInSuccessful) {
         if (state.isSignInSuccessful) {
             showDialog = false
-            Toast.makeText(
-                context,
-                "Sign in successful!",
-                Toast.LENGTH_LONG
-            ).show()
-
-            // Navigate to graph instead of one composable screen
-            navController.navigate(Graph.Main)
+            Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
+            navController.navigate(Graph.Main) {
+                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+            }
             viewModel?.resetState()
         }
     }
+
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -186,12 +184,12 @@ fun SignInScreen(
                 if (result == null) {
                     viewModel?.signInUserEmailPassword(email = email, password = password)
                 } else {
-                    showDialog = false
                     Toast.makeText(
                         context,
                         result,
                         Toast.LENGTH_LONG
                     ).show()
+                    showDialog = false
                 }
             }
 

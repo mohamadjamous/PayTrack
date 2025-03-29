@@ -31,35 +31,30 @@ class SignInViewModel : ViewModel() {
 
 
     fun signInUserEmailPassword(email: String, password: String) {
-
-        // Create user account with email password
         viewModelScope.launch {
+            try {
+                // Reset state before starting sign-in process
+                _state.value = SignInState()
 
-            // Check email exists in FireStore
-            val exists = repo.checkEmailExists(email = email)
-            println("Exists: $exists")
-
-            if (!exists) {
-                _state.value = SignInState(isSignInSuccessful = false)
-                _state.value = SignInState(signInError = "Email address or password is incorrect")
-                return@launch
-            } else {
-
-                val isLoggedIn = repo.loginUser(email = email, password = password)
-
-                if (isLoggedIn) {
-                    // Save user in FireStore
-                    _state.value = SignInState(isSignInSuccessful = true)
-                    return@launch
-                } else {
-                    _state.value = SignInState(isSignInSuccessful = false)
-                    _state.value = SignInState(signInError = "Something went wrong while signing in")
+                val exists = repo.checkEmailExists(email)
+                if (!exists) {
+                    _state.value = SignInState(signInError = "Email address or password is incorrect")
                     return@launch
                 }
+
+                val isLoggedIn = repo.loginUser(email, password)
+                _state.value = SignInState(isSignInSuccessful = isLoggedIn)
+
+                if (!isLoggedIn) {
+                    _state.value = SignInState(signInError = "Something went wrong while signing in")
+                }
+
+            } catch (e: Exception) {
+                _state.value = SignInState(signInError = e.localizedMessage ?: "Unknown error occurred")
             }
         }
-
     }
+
 
     fun validateLoginInput(email: String, password: String): String? {
         if (email.isBlank()) {

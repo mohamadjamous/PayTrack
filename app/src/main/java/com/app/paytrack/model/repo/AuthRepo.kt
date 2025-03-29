@@ -149,21 +149,18 @@ class AuthRepo {
     }
 
     suspend fun checkEmailExists(email: String): Boolean {
-        return try {
-            val db = FirebaseFirestore.getInstance()
-            val result = db.collection(Collections.Users.value)
+        return suspendCancellableCoroutine { continuation ->
+            fireStore.collection(Collections.Users.value)
                 .whereEqualTo("email", email)
                 .get()
-                .await()
-            !result.isEmpty // Returns true if email exists
-        } catch (e: Exception) {
-            false // Handle errors gracefully
+                .addOnSuccessListener { snapshot ->
+                    continuation.resume(!snapshot.isEmpty)
+                }
+                .addOnFailureListener {
+                    continuation.resumeWithException(it)
+                }
         }
     }
-
-
-
-
 
 
     fun logout() {
