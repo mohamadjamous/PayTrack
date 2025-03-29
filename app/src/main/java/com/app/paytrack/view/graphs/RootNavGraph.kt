@@ -33,6 +33,7 @@ import com.app.paytrack.view.main.HomeScreen
 import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
+import com.app.paytrack.view.sign_in.SignInResult
 import com.app.paytrack.viewmodel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -115,12 +116,11 @@ fun RootNavGraph(
                                 signInResult.data?.isGoogleSignIn = true
                                 viewModel.onSignInResult(signInResult)
                             }
+                        }else{
+                            viewModel.onSignInCancelled()
                         }
                     }
                 )
-
-
-
 
                 SignInScreen(
                     navController = navController,
@@ -162,8 +162,13 @@ fun RootNavGraph(
                                 val signInResult = googleAuthUiClient.signInWithIntent(
                                     intent = result.data ?: return@launch
                                 )
+                                // Sign in success, update UI with the signed-in user's information
+                                signInResult.data?.isGoogleSignIn = true
                                 viewModel.onSignInResult(signInResult)
                             }
+                        }
+                        else{
+                            viewModel.onSignInCancelled()
                         }
                     }
                 )

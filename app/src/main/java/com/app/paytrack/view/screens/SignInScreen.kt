@@ -82,8 +82,9 @@ fun SignInScreen(
 
     // Handle errors from sign-in state
     LaunchedEffect(state.signInError) {
+
+        showDialog = false
         state.signInError?.let { error ->
-            showDialog = false
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
     }
@@ -91,8 +92,8 @@ fun SignInScreen(
     // Handle sign-in success for both Google and Email/Password
     LaunchedEffect(state.isSignInSuccessful) {
 
+        showDialog = false
         if (state.isSignInSuccessful) {
-            showDialog = false
 
             // Google sign in case
             if (state.isGoogleSignIn) {
@@ -128,23 +129,11 @@ fun SignInScreen(
         }
     }
 
-    // Handle Google Sign-In separately
-//    LaunchedEffect(Unit) {
-//        val firebaseUser = FirebaseAuth.getInstance().currentUser
-//        val email = firebaseUser?.email
-//
-//        if (email != null) {
-//            val isRegistered = AuthRepo().checkEmailExists(email)
-//            if (isRegistered) {
-//                showDialog = false
-//                navController.navigate(Graph.Main)
-//            } else {
-//                Toast.makeText(context, "Account is not registered!", Toast.LENGTH_LONG).show()
-//            }
-//        } else {
-//            Toast.makeText(context, "Error retrieving user email!", Toast.LENGTH_LONG).show()
-//        }
-//    }
+    LaunchedEffect(state.isSignInCancelled) {
+        if (state.isSignInCancelled) {
+            showDialog = false
+        }
+    }
 
 
     Box(modifier = Modifier.fillMaxSize()) {

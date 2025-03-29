@@ -43,12 +43,14 @@ import androidx.navigation.compose.rememberNavController
 import com.app.paytrack.R
 import com.app.paytrack.model.Graph
 import com.app.paytrack.model.Screen
+import com.app.paytrack.model.repo.AuthRepo
 import com.app.paytrack.view.components.CustomButton
 import com.app.paytrack.view.components.CustomDialog
 import com.app.paytrack.view.components.CustomTextField
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.view.sign_in.SignInState
 import com.app.paytrack.viewmodel.SignUpViewModel
+import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
 
 @Composable
@@ -92,37 +94,56 @@ fun SignUpScreen(
         }
     }
 
-    // Handle sign up success
+
+    // Handle sign-in success for both Google and Email/Password
     LaunchedEffect(state.isSignInSuccessful) {
+
         if (state.isSignInSuccessful) {
-            showDialog = false  // Hide dialog on success
-            Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
-            navController.navigate(Screen.Home)
-        }
-    }
+            showDialog = false
 
-    LaunchedEffect(key1 = Unit) {
-        if (googleAuthUiClient?.getSignedInUser() != null) {
+            // Google sign in case
+            if (state.isGoogleSignIn) {
 
-            // Navigate to graph instead of one composable screen
-            navController.navigate(Graph.Main)
-        }
-    }
+                val firebaseUser = FirebaseAuth.getInstance().currentUser
+                val email = firebaseUser?.email
 
-    LaunchedEffect(key1 = state.isSignInSuccessful) {
-        if (state.isSignInSuccessful) {
-            Toast.makeText(
-                context,
-                "Sign in successful!",
-                Toast.LENGTH_LONG
-            ).show()
+                if (email != null) {
 
-            // Navigate to graph instead of one composable screen
-            navController.navigate(Graph.Main)
+                    val isRegistered = AuthRepo().checkEmailExists(email)
+
+                    if (!isRegistered) {
+
+                        Toast.makeText(context, "Sign up successful Google!", Toast.LENGTH_LONG).show()
+                        navController.navigate(Graph.Main) {
+                            popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                        }
+                    } else {
+                        Toast.makeText(context, "Account exist with this email address!", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                } else {
+                    Toast.makeText(context, "Error retrieving user email!", Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+
+            // Email password sign in state
+            else {
+                Toast.makeText(context, "Sign up successful!", Toast.LENGTH_LONG).show()
+                navController.navigate(Graph.Main) {
+                    popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                }
+
+            }
             viewModel.resetState()
         }
     }
 
+    LaunchedEffect(state.isSignInCancelled) {
+        if (state.isSignInCancelled) {
+            showDialog = false
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
 

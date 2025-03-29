@@ -95,13 +95,18 @@ class SignUpViewModel : ViewModel() {
         _state.update {
             it.copy(
                 isSignInSuccessful = result.data != null,
-                signInError = result.errorMessage
+                signInError = result.errorMessage,
+                isGoogleSignIn = result.data?.isGoogleSignIn ?: false
             )
         }
     }
 
     fun resetState() {
         _state.update { SignInState() }
+    }
+
+    fun onSignInCancelled() {
+        _state.update { it.copy(isSignInCancelled = true) }
     }
 
 }

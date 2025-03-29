@@ -109,4 +109,8 @@ class SignInViewModel : ViewModel() {
     }
 
 
+
+    fun onSignInCancelled() {
+        _state.update { it.copy(isSignInCancelled = true) }
+    }
 }
