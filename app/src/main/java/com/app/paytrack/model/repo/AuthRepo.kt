@@ -8,8 +8,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class AuthRepo {
@@ -27,36 +30,35 @@ class AuthRepo {
         return false
     }
 
-    suspend fun createUser(
-        email: String, password: String
-    ): Boolean {
-        try {
+    suspend fun createUser(email: String, password: String): Boolean {
 
-            val result = suspendCoroutine { continuation ->
-
+        return try {
+            val authResult = suspendCancellableCoroutine { continuation ->
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener {
-                        println(tag + "register success")
-                        CoroutineScope(Dispatchers.IO).launch {
-                            continuation.resume(loginUser(email, password))
-                        }
+                        println("Register success")
+                        continuation.resume(true) // Resume with success
                     }
                     .addOnFailureListener {
-                        println(tag + "register failure ${it.message}")
-                        continuation.resume(false)
+                        println("Register failure: ${it.message}")
+                        continuation.resume(false) // Resume with failure
                     }
-
             }
 
-            return result
+            if (authResult) {
+                loginUser(email, password) // Waits for this to complete
+            } else {
+                false // Registration failed, so don't attempt login
+            }
 
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
-            println(tag + "register exception ${e.message}")
-            return false
+            println("Register exception: ${e.message}")
+            false
         }
     }
+
 
     suspend fun loginUser(
         email: String, password: String
@@ -113,33 +115,55 @@ class AuthRepo {
     }
 
 
-    suspend fun saveUser(
-        user: User
-    ): Boolean {
-        try {
-
-            val result = suspendCoroutine { continuation ->
+    suspend fun saveUser(user: User): Boolean {
+        return try {
+            suspendCancellableCoroutine { continuation ->
                 fireStore.collection(Collections.Users.value)
                     .add(user)
                     .addOnSuccessListener {
-                        println(tag + "user saved successfully")
-                        continuation.resume(true)
+                        println("User saved successfully")
+                        continuation.resume(true) // Resume with success
                     }
                     .addOnFailureListener {
-                        println(tag + "error saving user ${it.message}")
-                        continuation.resume(false)
+                        println("Error saving user: ${it.message}")
+                        if (continuation.isActive) {
+                            continuation.resumeWithException(it) // Throw exception for proper error handling
+                        }
                     }
             }
-
-            return result
-
         } catch (e: Exception) {
             e.printStackTrace()
-            if (e is CancellationException) throw e
-            println(tag + "error saving user ${e.message}")
-            return false
+            if (e is CancellationException) throw e // Properly handle coroutine cancellation
+            println("Error saving user: ${e.message}")
+            false
         }
     }
+
+    suspend fun checkEmailInAuth(email: String): Boolean {
+        return try {
+            val result = FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email).await()
+            result.signInMethods?.isNotEmpty() == true // True if email exists
+        } catch (e: Exception) {
+            false // Handle errors gracefully
+        }
+    }
+
+    suspend fun checkEmailExists(email: String): Boolean {
+        return try {
+            val db = FirebaseFirestore.getInstance()
+            val result = db.collection(Collections.Users.value)
+                .whereEqualTo("email", email)
+                .get()
+                .await()
+            !result.isEmpty // Returns true if email exists
+        } catch (e: Exception) {
+            false // Handle errors gracefully
+        }
+    }
+
+
+
+
 
 
     fun logout() {

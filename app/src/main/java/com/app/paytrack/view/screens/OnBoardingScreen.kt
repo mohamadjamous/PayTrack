@@ -152,7 +152,7 @@ fun OnBoardingScreen(
             text = stringResource(id = R.string.get_started)
         ) {
             // Navigate to SignIn screen
-//            navController.navigate(Screen.SignIn)
+            navController.navigate(Screen.SignIn)
         }
 
 

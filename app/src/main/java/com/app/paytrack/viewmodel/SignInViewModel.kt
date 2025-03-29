@@ -10,17 +10,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SignInViewModel: ViewModel() {
+class SignInViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
     private val repo = AuthRepo()
 
     fun onSignInResult(result: SignInResult) {
-        _state.update { it.copy(
-            isSignInSuccessful = result.data != null,
-            signInError = result.errorMessage
-        ) }
+        _state.update {
+            it.copy(
+                isSignInSuccessful = result.data != null,
+                signInError = result.errorMessage
+            )
+        }
     }
 
     fun resetState() {
@@ -30,18 +32,30 @@ class SignInViewModel: ViewModel() {
 
     fun signInUserEmailPassword(email: String, password: String) {
 
-        // Check email exists in FireStore
-
         // Create user account with email password
         viewModelScope.launch {
-            val isLoggedIn = repo.loginUser(email = email, password = password)
 
-            if (isLoggedIn) {
-                // Save user in FireStore
-                _state.value = SignInState(isSignInSuccessful = true)
-            } else {
+            // Check email exists in FireStore
+            val exists = repo.checkEmailExists(email = email)
+            println("Exists: $exists")
+
+            if (!exists) {
                 _state.value = SignInState(isSignInSuccessful = false)
-                _state.value = SignInState(signInError = "Something went wrong while signing in")
+                _state.value = SignInState(signInError = "Email address or password is incorrect")
+                return@launch
+            } else {
+
+                val isLoggedIn = repo.loginUser(email = email, password = password)
+
+                if (isLoggedIn) {
+                    // Save user in FireStore
+                    _state.value = SignInState(isSignInSuccessful = true)
+                    return@launch
+                } else {
+                    _state.value = SignInState(isSignInSuccessful = false)
+                    _state.value = SignInState(signInError = "Something went wrong while signing in")
+                    return@launch
+                }
             }
         }
 
@@ -64,18 +78,19 @@ class SignInViewModel: ViewModel() {
     }
 
 
-    fun sendVerificationLink(email: String){
+    fun sendVerificationLink(email: String) {
 
         viewModelScope.launch {
 
             val result = repo.sendPasswordResetEmail(email)
 
-            if (result){
+            if (result) {
 
                 _state.value = SignInState(isPasswordLinkSuccessful = true)
             } else {
                 _state.value = SignInState(isPasswordLinkSuccessful = false)
-                _state.value = SignInState(passwordLinkError = "Something went wrong while sending link")
+                _state.value =
+                    SignInState(passwordLinkError = "Something went wrong while sending link")
             }
         }
 

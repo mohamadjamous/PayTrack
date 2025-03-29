@@ -21,27 +21,41 @@ class SignUpViewModel : ViewModel() {
 
     fun signUpUserEmailPassword(name: String, email: String, password: String) {
 
-        // Check email exists in FireStore
 
         // Create user account with email password
         viewModelScope.launch {
-            val isCreated = repo.createUser(email = email, password = password)
 
-            if (isCreated) {
+            // Check email exists in FireStore
+            val exists = repo.checkEmailInAuth(email = email)
 
-                // Save user in FireStore
-               val isUserSaved =  repo.saveUser(User(name = name, email = email, isGoogleAccount = false))
+            if (exists) {
+                _state.value = SignInState(isSignInSuccessful = false)
+                _state.value = SignInState(signInError = "Email already exists!")
+                return@launch
+            } else {
 
-                if (isUserSaved) {
-                    _state.value = SignInState(isSignInSuccessful = true)
+                val isCreated = repo.createUser(email = email, password = password)
+
+                if (isCreated) {
+
+                    // Save user in FireStore
+                    val isUserSaved =
+                        repo.saveUser(User(name = name, email = email, isGoogleAccount = false))
+
+                    if (isUserSaved) {
+                        _state.value = SignInState(isSignInSuccessful = true)
+                        return@launch
+                    } else {
+                        _state.value = SignInState(isSignInSuccessful = false)
+                        _state.value = SignInState(signInError = "Error Creating Account!")
+                        return@launch
+                    }
+
                 } else {
                     _state.value = SignInState(isSignInSuccessful = false)
                     _state.value = SignInState(signInError = "Error Creating Account!")
+                    return@launch
                 }
-
-            } else {
-                _state.value = SignInState(isSignInSuccessful = false)
-                _state.value = SignInState(signInError = "Error Creating Account!")
             }
         }
 
@@ -71,10 +85,12 @@ class SignUpViewModel : ViewModel() {
 
 
     fun onSignInResult(result: SignInResult) {
-        _state.update { it.copy(
-            isSignInSuccessful = result.data != null,
-            signInError = result.errorMessage
-        ) }
+        _state.update {
+            it.copy(
+                isSignInSuccessful = result.data != null,
+                signInError = result.errorMessage
+            )
+        }
     }
 
     fun resetState() {
