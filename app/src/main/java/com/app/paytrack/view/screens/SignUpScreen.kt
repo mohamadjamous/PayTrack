@@ -41,10 +41,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.paytrack.R
+import com.app.paytrack.model.Graph
 import com.app.paytrack.model.Screen
 import com.app.paytrack.view.components.CustomButton
 import com.app.paytrack.view.components.CustomDialog
 import com.app.paytrack.view.components.CustomTextField
+import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.view.sign_in.SignInState
 import com.app.paytrack.viewmodel.SignUpViewModel
 import java.util.Locale
@@ -55,7 +57,8 @@ fun SignUpScreen(
     navController: NavController,
     onGoogleSignInClick: () -> Unit,
     state: SignInState,
-    viewModel: SignUpViewModel
+    viewModel: SignUpViewModel,
+    googleAuthUiClient: GoogleAuthUiClient? = null,
 ) {
 
     val context = LocalContext.current
@@ -95,6 +98,28 @@ fun SignUpScreen(
             showDialog = false  // Hide dialog on success
             Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_SHORT).show()
             navController.navigate(Screen.Home)
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        if (googleAuthUiClient?.getSignedInUser() != null) {
+
+            // Navigate to graph instead of one composable screen
+            navController.navigate(Graph.Main)
+        }
+    }
+
+    LaunchedEffect(key1 = state.isSignInSuccessful) {
+        if (state.isSignInSuccessful) {
+            Toast.makeText(
+                context,
+                "Sign in successful!",
+                Toast.LENGTH_LONG
+            ).show()
+
+            // Navigate to graph instead of one composable screen
+            navController.navigate(Graph.Main)
+            viewModel.resetState()
         }
     }
 

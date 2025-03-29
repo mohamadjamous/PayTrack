@@ -44,12 +44,14 @@ import androidx.navigation.compose.rememberNavController
 import com.app.paytrack.R
 import com.app.paytrack.model.Graph
 import com.app.paytrack.model.Screen
+import com.app.paytrack.model.repo.AuthRepo
 import com.app.paytrack.view.components.CustomButton
 import com.app.paytrack.view.components.CustomDialog
 import com.app.paytrack.view.components.CustomTextField
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.view.sign_in.SignInState
 import com.app.paytrack.viewmodel.SignInViewModel
+import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
 
 
@@ -78,38 +80,71 @@ fun SignInScreen(
         mutableStateOf(false)
     }
 
+    // Handle errors from sign-in state
     LaunchedEffect(state.signInError) {
-
         state.signInError?.let { error ->
             showDialog = false
-            Toast.makeText(
-                context,
-                error,
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
     }
 
-
-    LaunchedEffect(key1 = Unit) {
-        if (googleAuthUiClient?.getSignedInUser() != null) {
-            showDialog = false
-            // Navigate to graph instead of one composable screen
-            navController.navigate(Graph.Main)
-        }
-    }
-
+    // Handle sign-in success for both Google and Email/Password
     LaunchedEffect(state.isSignInSuccessful) {
+
         if (state.isSignInSuccessful) {
             showDialog = false
-            Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
-            navController.navigate(Graph.Main) {
-                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+
+            // Google sign in case
+            if (state.isGoogleSignIn) {
+
+                val firebaseUser = FirebaseAuth.getInstance().currentUser
+                val email = firebaseUser?.email
+
+                if (email != null) {
+
+                    val isRegistered = AuthRepo().checkEmailExists(email)
+                    if (isRegistered) {
+
+                        Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
+                        navController.navigate(Graph.Main)
+                    } else {
+                        Toast.makeText(context, "Account is not registered!", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                } else {
+                    Toast.makeText(context, "Error retrieving user email!", Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+            // Email password sign in state
+            else {
+                Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
+                navController.navigate(Graph.Main) {
+                    popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                }
+
             }
             viewModel?.resetState()
         }
     }
 
+    // Handle Google Sign-In separately
+//    LaunchedEffect(Unit) {
+//        val firebaseUser = FirebaseAuth.getInstance().currentUser
+//        val email = firebaseUser?.email
+//
+//        if (email != null) {
+//            val isRegistered = AuthRepo().checkEmailExists(email)
+//            if (isRegistered) {
+//                showDialog = false
+//                navController.navigate(Graph.Main)
+//            } else {
+//                Toast.makeText(context, "Account is not registered!", Toast.LENGTH_LONG).show()
+//            }
+//        } else {
+//            Toast.makeText(context, "Error retrieving user email!", Toast.LENGTH_LONG).show()
+//        }
+//    }
 
 
     Box(modifier = Modifier.fillMaxSize()) {

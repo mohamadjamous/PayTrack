@@ -34,6 +34,7 @@ import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.viewmodel.SignUpViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
@@ -106,16 +107,19 @@ fun RootNavGraph(
                     contract = ActivityResultContracts.StartIntentSenderForResult(),
                     onResult = { result ->
                         if (result.resultCode == RESULT_OK) {
-
                             lifecycleScope.launch {
                                 val signInResult = googleAuthUiClient.signInWithIntent(
                                     intent = result.data ?: return@launch
                                 )
+                                // Sign in success, update UI with the signed-in user's information
+                                signInResult.data?.isGoogleSignIn = true
                                 viewModel.onSignInResult(signInResult)
                             }
                         }
                     }
                 )
+
+
 
 
                 SignInScreen(
@@ -164,29 +168,6 @@ fun RootNavGraph(
                     }
                 )
 
-
-                LaunchedEffect(key1 = Unit) {
-                    if (googleAuthUiClient.getSignedInUser() != null) {
-
-                        // Navigate to graph instead of one composable screen
-                        navController.navigate(Graph.Main)
-                    }
-                }
-
-                LaunchedEffect(key1 = state.isSignInSuccessful) {
-                    if (state.isSignInSuccessful) {
-                        Toast.makeText(
-                            context,
-                            "Sign in successful!",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        // Navigate to graph instead of one composable screen
-                        navController.navigate(Graph.Main)
-                        viewModel.resetState()
-                    }
-                }
-
                 SignUpScreen(
                     navController = navController,
                     state = state,
@@ -200,7 +181,8 @@ fun RootNavGraph(
                             )
                         }
                     },
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    googleAuthUiClient = googleAuthUiClient
                 )
             }
 
