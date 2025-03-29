@@ -28,9 +28,11 @@ class SignUpViewModel : ViewModel() {
             // Check email exists in FireStore
             val exists = repo.checkEmailInAuth(email = email)
 
+            // Reset state before starting sign-in process
+            _state.value = SignInState()
+
             if (exists) {
-                _state.value = SignInState(isSignInSuccessful = false)
-                _state.value = SignInState(signInError = "Email already exists!")
+                _state.value = SignInState(isSignInSuccessful = false,signInError = "Email already exists!")
                 return@launch
             } else {
 
@@ -46,14 +48,12 @@ class SignUpViewModel : ViewModel() {
                         _state.value = SignInState(isSignInSuccessful = true)
                         return@launch
                     } else {
-                        _state.value = SignInState(isSignInSuccessful = false)
-                        _state.value = SignInState(signInError = "Error Creating Account!")
+                        _state.value = SignInState(isSignInSuccessful = false,signInError = "Error Creating Account!")
                         return@launch
                     }
 
                 } else {
-                    _state.value = SignInState(isSignInSuccessful = false)
-                    _state.value = SignInState(signInError = "Error Creating Account!")
+                    _state.value = SignInState(isSignInSuccessful = false,signInError = "Error Creating Account!")
                     return@launch
                 }
             }
