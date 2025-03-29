@@ -97,47 +97,50 @@ fun SignUpScreen(
 
     // Handle sign-in success for both Google and Email/Password
     LaunchedEffect(state.isSignInSuccessful) {
-
         if (state.isSignInSuccessful) {
             showDialog = false
 
-            // Google sign in case
-            if (state.isGoogleSignIn) {
+            val firebaseUser = FirebaseAuth.getInstance().currentUser
+            val email = firebaseUser?.email
 
-                val firebaseUser = FirebaseAuth.getInstance().currentUser
-                val email = firebaseUser?.email
+            if (email != null) {
+                val isRegistered = AuthRepo().checkEmailExists(email)
 
-                if (email != null) {
-
-                    val isRegistered = AuthRepo().checkEmailExists(email)
-
-                    if (!isRegistered) {
-
-                        Toast.makeText(context, "Sign up successful Google!", Toast.LENGTH_LONG).show()
-                        navController.navigate(Graph.Main) {
-                            popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                if (!isRegistered) {
+                    // Save user to Firestore first
+                    viewModel.saveUser(
+                        email = email,
+                        name = firebaseUser.displayName ?: "",
+                        onSuccess = {
+                            // Move navigation inside FireStore save success
+                            Toast.makeText(context, "Sign up successful with Google!", Toast.LENGTH_LONG).show()
+                            navController.navigate(Graph.Main) {
+                                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                            }
+                        },
+                        onFailure = {
+                            Toast.makeText(context, "Failed to save user details!", Toast.LENGTH_LONG).show()
                         }
-                    } else {
-                        Toast.makeText(context, "Account exist with this email address!", Toast.LENGTH_LONG)
-                            .show()
-                    }
+                    )
                 } else {
-                    Toast.makeText(context, "Error retrieving user email!", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(context, "Account exists with this email address!", Toast.LENGTH_LONG).show()
                 }
+            } else {
+                Toast.makeText(context, "Error retrieving user email!", Toast.LENGTH_LONG).show()
             }
 
-            // Email password sign in state
-            else {
+            // Email/password sign-in case (separate logic)
+            if (!state.isGoogleSignIn) {
                 Toast.makeText(context, "Sign up successful!", Toast.LENGTH_LONG).show()
                 navController.navigate(Graph.Main) {
                     popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
                 }
-
             }
+
             viewModel.resetState()
         }
     }
+
 
     LaunchedEffect(state.isSignInCancelled) {
         if (state.isSignInCancelled) {

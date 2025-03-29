@@ -109,4 +109,22 @@ class SignUpViewModel : ViewModel() {
         _state.update { it.copy(isSignInCancelled = true) }
     }
 
+
+    // This function is to save user account only when creating account with Google
+    fun saveUser(email: String, name: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+
+        viewModelScope.launch {
+            // Attempt to save the user to the repository (or FireStore)
+            val result = repo.saveUser(User(email = email, name = name, isGoogleAccount = true))
+
+            // If the save operation is successful
+            if (result) {
+                onSuccess()  // Trigger the success callback
+            } else {
+                onFailure()  // Trigger the failure callback
+            }
+        }
+    }
+
+
 }
