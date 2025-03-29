@@ -76,7 +76,14 @@ fun RootNavGraph(
                 WelcomeScreen(navController = navController)
             }
 
-            composable<Screen.OnBoarding> {
+            composable<Screen.OnBoarding>(
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        tween(navAnimationSpeed)
+                    )
+                }
+            ) {
                 OnBoardingScreen(
                     navController = navController
                 )
