@@ -38,7 +38,8 @@ class SignInViewModel : ViewModel() {
 
                 val exists = repo.checkEmailExists(email)
                 if (!exists) {
-                    _state.value = SignInState(signInError = "Email address or password is incorrect")
+                    _state.value =
+                        SignInState(signInError = "Email address or password is incorrect")
                     return@launch
                 }
 
@@ -46,11 +47,13 @@ class SignInViewModel : ViewModel() {
                 _state.value = SignInState(isSignInSuccessful = isLoggedIn)
 
                 if (!isLoggedIn) {
-                    _state.value = SignInState(signInError = "Something went wrong while signing in")
+                    _state.value =
+                        SignInState(signInError = "Something went wrong while signing in")
                 }
 
             } catch (e: Exception) {
-                _state.value = SignInState(signInError = e.localizedMessage ?: "Unknown error occurred")
+                _state.value =
+                    SignInState(signInError = e.localizedMessage ?: "Unknown error occurred")
             }
         }
     }
@@ -77,15 +80,28 @@ class SignInViewModel : ViewModel() {
 
         viewModelScope.launch {
 
-            val result = repo.sendPasswordResetEmail(email)
+            // Check email exists in FireStore
+            val exists = repo.checkEmailInAuth(email = email)
 
-            if (result) {
+            // Reset state before starting sign-in process
+            _state.value = SignInState()
 
-                _state.value = SignInState(isPasswordLinkSuccessful = true)
+            if (!exists) {
+
+                _state.value = SignInState(
+                     isSignInSuccessful = false,
+                    passwordLinkError = "Email address is not registered")
             } else {
-                _state.value = SignInState(isPasswordLinkSuccessful = false)
-                _state.value =
-                    SignInState(passwordLinkError = "Something went wrong while sending link")
+                val result = repo.sendPasswordResetEmail(email)
+
+                if (result) {
+
+                    _state.value = SignInState(isPasswordLinkSuccessful = true)
+                } else {
+                    _state.value = SignInState(isPasswordLinkSuccessful = false)
+                    _state.value =
+                        SignInState(passwordLinkError = "Something went wrong while sending link")
+                }
             }
         }
 
