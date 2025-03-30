@@ -66,6 +66,7 @@ fun ForgotPasswordScreen(
                 error,
                 Toast.LENGTH_LONG
             ).show()
+            viewModel.resetState()
         }
     }
 
@@ -78,7 +79,6 @@ fun ForgotPasswordScreen(
                 "Email sent successfully",
                 Toast.LENGTH_LONG
             ).show()
-
             viewModel.resetState()
         }
     }
