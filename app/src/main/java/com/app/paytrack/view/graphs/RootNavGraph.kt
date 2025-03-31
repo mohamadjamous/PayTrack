@@ -32,6 +32,7 @@ import androidx.lifecycle.lifecycleScope
 import com.app.paytrack.view.main.HomeScreen
 import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
+import com.app.paytrack.view.sign_in.CreateAccountScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.view.sign_in.SignInResult
 import com.app.paytrack.viewmodel.SignUpViewModel
@@ -201,6 +202,20 @@ fun RootNavGraph(
                     state = state,
                     viewModel = viewModel
                 )
+            }
+
+            composable<Screen.CreateAccount>(
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        tween(navAnimationSpeed)
+                    )
+                }
+            ) {
+
+                CreateAccountScreen()
+
+
             }
 
         }

@@ -25,5 +25,8 @@ sealed class Screen(val route: String) {
     @Serializable
     object VerifyOtp
 
+    @Serializable
+    object CreateAccount
+
 
 }
