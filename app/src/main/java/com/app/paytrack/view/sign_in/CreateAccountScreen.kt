@@ -80,7 +80,7 @@ fun CreateAccountScreen(modifier: Modifier = Modifier) {
                     Toast.makeText(context, "Please add at least one account", Toast.LENGTH_LONG)
                         .show()
                 } else if (accounts.size > 2) {
-                    Toast.makeText(context, "Cannot add more than 3 accounts", Toast.LENGTH_LONG)
+                    Toast.makeText(context, "Cannot add more than 2 accounts", Toast.LENGTH_LONG)
                         .show()
                 } else {
                     // Save account info
