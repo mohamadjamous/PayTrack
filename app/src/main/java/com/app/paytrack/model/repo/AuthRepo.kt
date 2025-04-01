@@ -162,6 +162,26 @@ class AuthRepo {
         }
     }
 
+    suspend fun getUserAccount(id: String): User {
+        return suspendCancellableCoroutine { continuation ->
+            fireStore.collection(Collections.Users.value)
+                .document(id)
+                .get()
+                .addOnSuccessListener { document ->
+                    val user = document.toObject(User::class.java)
+                    if (user != null) {
+                        continuation.resume(user)
+                    } else {
+                        continuation.resumeWithException(NullPointerException("User not found"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resumeWithException(exception)
+                }
+        }
+    }
+
+
 
     fun logout() {
         firebaseAuth.signOut()

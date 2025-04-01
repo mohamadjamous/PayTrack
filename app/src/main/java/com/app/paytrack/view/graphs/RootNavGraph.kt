@@ -9,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,12 +28,12 @@ import com.app.paytrack.view.screens.WelcomeScreen
 import com.app.paytrack.viewmodel.SignInViewModel
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
+import com.app.paytrack.model.repo.AuthRepo
 import com.app.paytrack.view.main.HomeScreen
 import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.CreateAccountScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
-import com.app.paytrack.view.sign_in.SignInResult
 import com.app.paytrack.viewmodel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -63,6 +62,8 @@ fun RootNavGraph(
     if (firstTime == 0 || firstTime == -1) {
         saveToPreferences(context = context, value = 1)
     }
+
+    // Check when user enters the app
 
     NavHost(
         navController = navController,
@@ -205,6 +206,7 @@ fun RootNavGraph(
             }
 
             composable<Screen.CreateAccount>(
+
                 enterTransition = {
                     return@composable slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Start,
@@ -245,6 +247,26 @@ fun RootNavGraph(
     }
 
 }
+
+
+suspend fun isUserCreateAccount(): Boolean{
+
+    // access user firestore document
+    val firebaseUser = FirebaseAuth.getInstance().currentUser
+    val repo = AuthRepo()
+
+    // Return if no user is signed in
+    if (firebaseUser == null) {
+        return false
+    }
+
+    val user = repo.getUserAccount(id = firebaseUser.uid)
+
+    // check if user has at least one account
+    // return true or false accordingly
+    return user.account != null
+}
+
 
 fun saveToPreferences(context: Context, value: Int) {
     val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)

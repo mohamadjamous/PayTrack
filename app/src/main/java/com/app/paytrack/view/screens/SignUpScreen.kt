@@ -114,9 +114,9 @@ fun SignUpScreen(
                         onSuccess = {
                             // Move navigation inside FireStore save success
                             Toast.makeText(context, "Sign up successful with Google!", Toast.LENGTH_LONG).show()
-                            navController.navigate(Graph.Main) {
-                                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
-                            }
+                                navController.navigate(Screen.CreateAccount) {
+                                    popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                                }
                         },
                         onFailure = {
                             Toast.makeText(context, "Failed to save user details!", Toast.LENGTH_LONG).show()
@@ -132,7 +132,7 @@ fun SignUpScreen(
             // Email/password sign-in case (separate logic)
             if (!state.isGoogleSignIn) {
                 Toast.makeText(context, "Sign up successful!", Toast.LENGTH_LONG).show()
-                navController.navigate(Graph.Main) {
+                navController.navigate(Screen.CreateAccount) {
                     popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
                 }
             }
