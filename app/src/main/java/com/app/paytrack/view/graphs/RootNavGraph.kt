@@ -10,6 +10,8 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,7 +34,10 @@ import com.app.paytrack.viewmodel.SignInViewModel
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
 import com.app.paytrack.model.repo.AuthRepo
+import com.app.paytrack.view.main.BottomNavigationBar
+import com.app.paytrack.view.main.ChartsScreen
 import com.app.paytrack.view.main.HomeScreen
+import com.app.paytrack.view.main.ProfileScreen
 import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.CreateAccountScreen
@@ -69,7 +74,7 @@ fun RootNavGraph(
     val currentUser = FirebaseAuth.getInstance().currentUser
 
     var isMainScreen = false
-     if (currentUser != null) {
+    if (currentUser != null) {
         // User is signed in, navigate to the main screen
         isMainScreen = true
     }
@@ -79,178 +84,198 @@ fun RootNavGraph(
         saveToPreferences(context = context, value = 1)
     }
 
+    // Main Scaffold UI
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            // Only show BottomNavigationBar when in Graph.Main
+            if (isMainScreen) {
+                BottomNavigationBar(navController = navController)
+            }
+        }
+    ) { innerPadding ->
+        // NavHost with conditional start destination based on `isMainScreen`
 
-
-    NavHost(
-        navController = navController,
-        startDestination = if (isMainScreen) {
-            Graph.Main
-        } else {
-            Graph.Auth
-        },
-        enterTransition = { slideInHorizontally() },
-        exitTransition = { slideOutHorizontally() }
-    ) {
-
-        // On boarding nav graph
-        navigation<Graph.Auth>(
-            startDestination = startDestination
+        NavHost(
+            navController = navController,
+            startDestination = if (isMainScreen) {
+                Graph.Main
+            } else {
+                Graph.Auth
+            },
+            enterTransition = { slideInHorizontally() },
+            exitTransition = { slideOutHorizontally() }
         ) {
 
-            composable<Screen.Welcome> {
-
-                WelcomeScreen(navController = navController)
-            }
-
-            composable<Screen.OnBoarding>(
-
-            ) {
-                OnBoardingScreen(
-                    navController = navController
-                )
-            }
-
-            composable<Screen.SignIn>(
-
+            // On boarding nav graph
+            navigation<Graph.Auth>(
+                startDestination = startDestination
             ) {
 
-                val viewModel = viewModel<SignInViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
+                composable<Screen.Welcome> {
+
+                    WelcomeScreen(navController = navController)
+                }
+
+                composable<Screen.OnBoarding>(
+
+                ) {
+                    OnBoardingScreen(
+                        navController = navController
+                    )
+                }
+
+                composable<Screen.SignIn>(
+
+                ) {
+
+                    val viewModel = viewModel<SignInViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
 
 
-                val launcher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartIntentSenderForResult(),
-                    onResult = { result ->
-                        if (result.resultCode == RESULT_OK) {
-                            lifecycleScope.launch {
-                                val signInResult = googleAuthUiClient.signInWithIntent(
-                                    intent = result.data ?: return@launch
-                                )
-                                // Sign in success, update UI with the signed-in user's information
-                                signInResult.data?.isGoogleSignIn = true
-                                viewModel.onSignInResult(signInResult)
+                    val launcher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.StartIntentSenderForResult(),
+                        onResult = { result ->
+                            if (result.resultCode == RESULT_OK) {
+                                lifecycleScope.launch {
+                                    val signInResult = googleAuthUiClient.signInWithIntent(
+                                        intent = result.data ?: return@launch
+                                    )
+                                    // Sign in success, update UI with the signed-in user's information
+                                    signInResult.data?.isGoogleSignIn = true
+                                    viewModel.onSignInResult(signInResult)
+                                }
+                            } else {
+                                viewModel.onSignInCancelled()
                             }
-                        } else {
-                            viewModel.onSignInCancelled()
                         }
-                    }
-                )
+                    )
 
-                SignInScreen(
-                    navController = navController,
-                    state = state,
-                    onGoogleSignInClick = {
-                        lifecycleScope.launch {
-                            val signInIntentSender = googleAuthUiClient.signIn()
-                            launcher.launch(
-                                IntentSenderRequest.Builder(
-                                    signInIntentSender ?: return@launch
-                                ).build()
-                            )
-                        }
-                    },
-                    googleAuthUiClient = googleAuthUiClient,
-                    viewModel = viewModel
-                )
-            }
-
-
-            composable<Screen.SignUp>(
-
-            ) {
-
-                val viewModel = viewModel<SignUpViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-
-                val launcher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartIntentSenderForResult(),
-                    onResult = { result ->
-                        if (result.resultCode == RESULT_OK) {
-
+                    SignInScreen(
+                        navController = navController,
+                        state = state,
+                        onGoogleSignInClick = {
                             lifecycleScope.launch {
-                                val signInResult = googleAuthUiClient.signInWithIntent(
-                                    intent = result.data ?: return@launch
+                                val signInIntentSender = googleAuthUiClient.signIn()
+                                launcher.launch(
+                                    IntentSenderRequest.Builder(
+                                        signInIntentSender ?: return@launch
+                                    ).build()
                                 )
-                                // Sign in success, update UI with the signed-in user's information
-                                signInResult.data?.isGoogleSignIn = true
-                                viewModel.onSignInResult(signInResult)
                             }
-                        } else {
-                            viewModel.onSignInCancelled()
-                        }
-                    }
-                )
+                        },
+                        googleAuthUiClient = googleAuthUiClient,
+                        viewModel = viewModel
+                    )
+                }
 
-                SignUpScreen(
-                    navController = navController,
-                    state = state,
-                    onGoogleSignInClick = {
-                        lifecycleScope.launch {
-                            val signInIntentSender = googleAuthUiClient.signIn()
-                            launcher.launch(
-                                IntentSenderRequest.Builder(
-                                    signInIntentSender ?: return@launch
-                                ).build()
-                            )
+
+                composable<Screen.SignUp>(
+
+                ) {
+
+                    val viewModel = viewModel<SignUpViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    val launcher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.StartIntentSenderForResult(),
+                        onResult = { result ->
+                            if (result.resultCode == RESULT_OK) {
+
+                                lifecycleScope.launch {
+                                    val signInResult = googleAuthUiClient.signInWithIntent(
+                                        intent = result.data ?: return@launch
+                                    )
+                                    // Sign in success, update UI with the signed-in user's information
+                                    signInResult.data?.isGoogleSignIn = true
+                                    viewModel.onSignInResult(signInResult)
+                                }
+                            } else {
+                                viewModel.onSignInCancelled()
+                            }
                         }
-                    },
-                    viewModel = viewModel,
-                    googleAuthUiClient = googleAuthUiClient
-                )
+                    )
+
+                    SignUpScreen(
+                        navController = navController,
+                        state = state,
+                        onGoogleSignInClick = {
+                            lifecycleScope.launch {
+                                val signInIntentSender = googleAuthUiClient.signIn()
+                                launcher.launch(
+                                    IntentSenderRequest.Builder(
+                                        signInIntentSender ?: return@launch
+                                    ).build()
+                                )
+                            }
+                        },
+                        viewModel = viewModel,
+                        googleAuthUiClient = googleAuthUiClient
+                    )
+                }
+
+                composable<Screen.ForgotPassword> {
+
+                    val viewModel = viewModel<SignInViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    ForgotPasswordScreen(
+                        navController = navController,
+                        state = state,
+                        viewModel = viewModel
+                    )
+                }
+
+                composable<Screen.CreateAccount>(
+
+                ) {
+
+                    val viewModel = viewModel<CreateAccountViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    CreateAccountScreen(
+                        viewModel = viewModel,
+                        state = state,
+                        navController = navController
+                    )
+
+
+                }
+
             }
 
-            composable<Screen.ForgotPassword> {
-
-                val viewModel = viewModel<SignInViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-
-                ForgotPasswordScreen(
-                    navController = navController,
-                    state = state,
-                    viewModel = viewModel
-                )
-            }
-
-            composable<Screen.CreateAccount>(
-
+            navigation<Graph.Main>(
+                startDestination = Screen.Home
             ) {
 
-                val viewModel = viewModel<CreateAccountViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
+                composable<Screen.Home> {
+                    HomeScreen(
+                        onSignOutClick = {
+                            lifecycleScope.launch {
+                                googleAuthUiClient.signOut()
+                                Toast.makeText(
+                                    context,
+                                    "Signed out",
+                                    Toast.LENGTH_LONG
+                                ).show()
 
-                CreateAccountScreen(
-                    viewModel = viewModel,
-                    state = state,
-                    navController = navController
-                )
+                                navController.popBackStack()
+                            }
+                        }
+                    )
+                }
 
+                composable<Screen.Charts> {
+                   ChartsScreen()
+                }
+
+                composable<Screen.Profile> {
+                    ProfileScreen()
+                }
 
             }
 
         }
-
-        navigation<Graph.Main>(
-            startDestination = Screen.Home
-        ) {
-            composable<Screen.Home> {
-                HomeScreen(
-                    onSignOutClick = {
-                        lifecycleScope.launch {
-                            googleAuthUiClient.signOut()
-                            Toast.makeText(
-                                context,
-                                "Signed out",
-                                Toast.LENGTH_LONG
-                            ).show()
-
-                            navController.popBackStack()
-                        }
-                    }
-                )
-            }
-
-        }
-
     }
 
 }

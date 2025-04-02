@@ -28,5 +28,11 @@ sealed class Screen(val route: String) {
     @Serializable
     object CreateAccount
 
+    @Serializable
+    object Profile
+
+    @Serializable
+    object Charts
+
 
 }
