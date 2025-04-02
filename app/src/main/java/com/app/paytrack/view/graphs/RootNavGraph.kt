@@ -8,6 +8,8 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,8 +53,6 @@ fun RootNavGraph(
     val firstTime = getSharedPreferences(context = context)
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleScope = remember(lifecycleOwner) { lifecycleOwner.lifecycleScope }
-    val navAnimationSpeed = 700
-
 
     // Check if it's first time
     val startDestination = if (firstTime == 0 || firstTime == -1) {
@@ -65,11 +65,31 @@ fun RootNavGraph(
         saveToPreferences(context = context, value = 1)
     }
 
-    // Check when user enters the app
+    // Check if the user is signed in or signed up
+    val currentUser = FirebaseAuth.getInstance().currentUser
+
+    var isMainScreen = false
+     if (currentUser != null) {
+        // User is signed in, navigate to the main screen
+        isMainScreen = true
+    }
+
+    // Save to preferences if it's the first time
+    if (firstTime == 0 || firstTime == -1) {
+        saveToPreferences(context = context, value = 1)
+    }
+
+
 
     NavHost(
         navController = navController,
-        startDestination = Graph.Auth
+        startDestination = if (isMainScreen) {
+            Graph.Main
+        } else {
+            Graph.Auth
+        },
+        enterTransition = { slideInHorizontally() },
+        exitTransition = { slideOutHorizontally() }
     ) {
 
         // On boarding nav graph
@@ -83,12 +103,7 @@ fun RootNavGraph(
             }
 
             composable<Screen.OnBoarding>(
-                enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start,
-                        tween(navAnimationSpeed)
-                    )
-                }
+
             ) {
                 OnBoardingScreen(
                     navController = navController
@@ -96,12 +111,7 @@ fun RootNavGraph(
             }
 
             composable<Screen.SignIn>(
-                enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.End,
-                        tween(navAnimationSpeed)
-                    )
-                }
+
             ) {
 
                 val viewModel = viewModel<SignInViewModel>()
@@ -146,12 +156,7 @@ fun RootNavGraph(
 
 
             composable<Screen.SignUp>(
-                enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start,
-                        tween(navAnimationSpeed)
-                    )
-                }
+
             ) {
 
                 val viewModel = viewModel<SignUpViewModel>()
@@ -208,12 +213,6 @@ fun RootNavGraph(
 
             composable<Screen.CreateAccount>(
 
-                enterTransition = {
-                    return@composable slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Start,
-                        tween(navAnimationSpeed)
-                    )
-                }
             ) {
 
                 val viewModel = viewModel<CreateAccountViewModel>()
