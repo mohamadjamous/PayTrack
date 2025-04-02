@@ -1,4 +1,4 @@
-package com.app.paytrack.view.sign_in
+package com.app.paytrack.model
 
 data class SignInState(
     val isSignInSuccessful: Boolean = false,

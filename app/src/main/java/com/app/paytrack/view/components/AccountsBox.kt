@@ -19,7 +19,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,14 +39,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
+import com.app.paytrack.model.Account
 
 
 @Composable
 fun AccountsBox(
     modifier: Modifier = Modifier,
-    accounts: List<String>,
-    onAddAccount: (String) -> Unit,
-    onRemoveAccount: (String) -> Unit
+    accounts: List<Account>,
+    onAddAccount: (Account) -> Unit,
+    onRemoveAccount: (Account) -> Unit
 ) {
 
     var showDialog by remember { mutableStateOf(false) }
@@ -115,11 +115,13 @@ fun AccountsBox(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     Text(
-                        text = account,
+                        text = "${account.name} - ${account.balance}",
                         color = Color.White,
                         fontSize = 16.sp
                     )
+
                     IconButton(onClick = { onRemoveAccount(account) }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
@@ -172,7 +174,7 @@ fun AccountsBox(
             confirmButton = {
                 TextButton(onClick = {
                     if (accountName.isNotBlank() && accountBalance.isNotBlank()) {
-                        onAddAccount("$accountName - $accountBalance")
+                        onAddAccount(Account(accountName, accountBalance.toDouble()))
                         accountName = ""
                         accountBalance = ""
                         showDialog = false
@@ -194,7 +196,7 @@ fun AccountsBox(
 @Preview(showSystemUi = true)
 @Composable
 fun AccountsBoxPreview(modifier: Modifier = Modifier) {
-    AccountsBox(accounts = listOf(""), onAddAccount = {
+    AccountsBox(accounts = listOf(Account("", 0.0)), onAddAccount = {
 
     }) {
 

@@ -2,7 +2,6 @@ package com.app.paytrack.view.screens
 
 import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,12 +30,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.paytrack.R
-import com.app.paytrack.model.Graph
 import com.app.paytrack.view.components.BackButton
 import com.app.paytrack.view.components.CustomButton
 import com.app.paytrack.view.components.CustomDialog
 import com.app.paytrack.view.components.CustomTextField
-import com.app.paytrack.view.sign_in.SignInState
+import com.app.paytrack.model.SignInState
 import com.app.paytrack.viewmodel.SignInViewModel
 import java.util.Locale
 

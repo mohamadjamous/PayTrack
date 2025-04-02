@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.CreateAccountScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
+import com.app.paytrack.viewmodel.CreateAccountViewModel
 import com.app.paytrack.viewmodel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -118,7 +120,7 @@ fun RootNavGraph(
                                 signInResult.data?.isGoogleSignIn = true
                                 viewModel.onSignInResult(signInResult)
                             }
-                        }else{
+                        } else {
                             viewModel.onSignInCancelled()
                         }
                     }
@@ -168,8 +170,7 @@ fun RootNavGraph(
                                 signInResult.data?.isGoogleSignIn = true
                                 viewModel.onSignInResult(signInResult)
                             }
-                        }
-                        else{
+                        } else {
                             viewModel.onSignInCancelled()
                         }
                     }
@@ -215,7 +216,14 @@ fun RootNavGraph(
                 }
             ) {
 
-                CreateAccountScreen()
+                val viewModel = viewModel<CreateAccountViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                CreateAccountScreen(
+                    viewModel = viewModel,
+                    state = state,
+                    navController = navController
+                )
 
 
             }
@@ -249,7 +257,7 @@ fun RootNavGraph(
 }
 
 
-suspend fun isUserCreateAccount(): Boolean{
+suspend fun isUserCreateAccount(): Boolean {
 
     // access user firestore document
     val firebaseUser = FirebaseAuth.getInstance().currentUser
