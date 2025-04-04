@@ -1,0 +1,125 @@
+package com.app.paytrack.view.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.app.paytrack.R
+
+@Composable
+fun MonthlyExpenses(
+    modifier: Modifier = Modifier
+) {
+    val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+
+    // State for selected month and dummy expense map
+    var selectedMonth by remember { mutableStateOf("June") }
+    val expenses = remember {
+        mapOf(
+            "January" to 110,
+            "February" to 98,
+            "March" to 120,
+            "April" to 87,
+            "May" to 145,
+            "June" to 132,
+            "July" to 123,
+            "August" to 155,
+            "September" to 101,
+            "October" to 95,
+            "November" to 110,
+            "December" to 170
+        )
+    }
+
+    Column(
+        modifier = modifier
+            .padding(10.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(color = colorResource(id = R.color.green)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .padding(top = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            LazyRow(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 25.dp), // Take up most of the space
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(months) { month ->
+                    Text(
+                        text = month.take(3),
+                        color = Color.White,
+                        fontWeight = if (month == selectedMonth) FontWeight.Bold else FontWeight.SemiBold,
+                        modifier = Modifier
+                            .clickable { selectedMonth = month }
+                            .padding(horizontal = 8.dp)
+                            .background(
+                                if (month == selectedMonth) Color.White.copy(alpha = 0.2f) else Color.Transparent,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    )
+                }
+            }
+
+            // Selected month on the right
+            Text(
+                text = selectedMonth,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(start = 10.dp)
+            )
+        }
+
+
+        Text(
+            modifier = Modifier.padding(top = 30.dp),
+            text = "${expenses[selectedMonth]}",
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 30.sp
+        )
+    }
+}
+
+
+@Preview(showSystemUi = true)
+@Composable
+fun MonthlyExpensesPreview(modifier: Modifier = Modifier) {
+    MonthlyExpenses()
+}

@@ -1,25 +1,134 @@
 package com.app.paytrack.view.main
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.app.paytrack.R
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onSignOutClick: () -> Unit) {
-    Column {
+    onSignOutClick: () -> Unit,
+    date: String,
 
-        Text(text = "Main Screen")
+    ) {
 
+
+    Column(
+        modifier = Modifier.padding(15.dp)
+    ) {
         Text(
             modifier = Modifier.clickable {
-              onSignOutClick()
+                onSignOutClick()
             },
-            text = "Sign out")
+            text = "Sign out"
+        )
+
+        // Current date "Sun, June 5"
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+
+        ) {
+            // Centered Text
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = date,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.dark_green),
+                fontSize = 22.sp
+            )
+
+            // Icons aligned to the end
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                IconButton(
+                    onClick = { /* your logic */ }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        painter = painterResource(id = R.drawable.notification),
+                        contentDescription = null,
+                        tint = Color.Unspecified
+                    )
+                }
+
+                IconButton(
+                    onClick = { /* your logic */ }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        painter = painterResource(id = R.drawable.settings),
+                        contentDescription = null,
+                        tint = Color.Unspecified
+                    )
+                }
+            }
+        }
+
+
+        // Daily expenses chart
+        Text(
+            modifier = Modifier.padding(top = 40.dp),
+            text = stringResource(id = R.string.monthly_expenses),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = colorResource(id = R.color.dark_green)
+        )
+
+
+        // Most used categories
+        Text(
+            modifier = Modifier.padding(top = 40.dp),
+            text = stringResource(id = R.string.most_used_categories),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = colorResource(id = R.color.dark_green)
+        )
+
+
+        // Expenses categories
+
+        Text(
+            modifier = Modifier.padding(top = 40.dp),
+            text = stringResource(id = R.string.expenses_categories),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = colorResource(id = R.color.dark_green)
+        )
+
+        // Reading icon
+        Text(
+            modifier = Modifier.padding(top = 40.dp),
+            text = stringResource(id = R.string.reading),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = colorResource(id = R.color.dark_green)
+        )
+
     }
 }
 
@@ -27,6 +136,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview(modifier: Modifier = Modifier) {
     HomeScreen(
-        onSignOutClick = {}
+        onSignOutClick = {},
+        date = "Sun, June 5"
     )
 }

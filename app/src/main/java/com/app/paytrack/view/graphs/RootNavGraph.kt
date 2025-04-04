@@ -45,6 +45,9 @@ import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.viewmodel.CreateAccountViewModel
 import com.app.paytrack.viewmodel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @Composable
@@ -248,8 +251,13 @@ fun RootNavGraph(
                 startDestination = Screen.Home
             ) {
 
+
+                val date: String = LocalDate.now().format(
+                    DateTimeFormatter.ofPattern("EEE, MMMM d", Locale.ENGLISH)
+                )
                 composable<Screen.Home> {
                     HomeScreen(
+                        date = date,
                         onSignOutClick = {
                             lifecycleScope.launch {
                                 googleAuthUiClient.signOut()
