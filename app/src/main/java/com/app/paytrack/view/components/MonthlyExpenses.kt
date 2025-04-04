@@ -1,15 +1,22 @@
 package com.app.paytrack.view.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,42 +30,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MonthlyExpenses(
-    modifier: Modifier = Modifier
-) {
-    val months = listOf(
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    )
+    modifier: Modifier = Modifier,
+    months: List<String>,
+    monthlySpendingData: Map<String, List<Int>>
+){
 
-    // State for selected month and dummy expense map
-    var selectedMonth by remember { mutableStateOf("June") }
-    val expenses = remember {
-        mapOf(
-            "January" to 110,
-            "February" to 98,
-            "March" to 120,
-            "April" to 87,
-            "May" to 145,
-            "June" to 132,
-            "July" to 123,
-            "August" to 155,
-            "September" to 101,
-            "October" to 95,
-            "November" to 110,
-            "December" to 170
-        )
-    }
+    val currentMonth = LocalDate.now()
+        .month
+        .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+
+    var selectedMonth by remember { mutableStateOf(currentMonth) }
+
+    val percentChange by remember { mutableStateOf("+921%") }
+
 
     Column(
         modifier = modifier
-            .padding(10.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
             .background(color = colorResource(id = R.color.green)),
@@ -104,22 +103,55 @@ fun MonthlyExpenses(
                 fontSize = 20.sp,
                 modifier = Modifier.padding(start = 10.dp)
             )
+
+
+
         }
 
 
         Text(
             modifier = Modifier.padding(top = 30.dp),
-            text = "${expenses[selectedMonth]}",
+            text = "${monthlySpendingData[selectedMonth]?.sum() ?: 0}",
             color = Color.White,
             fontWeight = FontWeight.Bold,
             fontSize = 30.sp
         )
+
+
+
+        PercentageChangeBox(percentageText = percentChange)
+
+
+        DailySpendingBarChart(
+            modifier = Modifier.padding(top = 16.dp),
+            dailySpending = monthlySpendingData[selectedMonth] ?: emptyList()
+        )
+
     }
 }
+
+
+
+
+
+
 
 
 @Preview(showSystemUi = true)
 @Composable
 fun MonthlyExpensesPreview(modifier: Modifier = Modifier) {
-    MonthlyExpenses()
+
+    val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+
+    val monthlySpendingData = remember {
+        months.associateWith { List(30) { (0..100).random() } }
+    }
+    MonthlyExpenses(
+        modifier = Modifier.padding(16.dp),
+        months = months,
+        monthlySpendingData = monthlySpendingData
+    )
 }

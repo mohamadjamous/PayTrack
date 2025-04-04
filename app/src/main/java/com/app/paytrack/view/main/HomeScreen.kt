@@ -1,5 +1,7 @@
 package com.app.paytrack.view.main
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +16,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
+import com.app.paytrack.view.components.MonthlyExpenses
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -33,6 +41,15 @@ fun HomeScreen(
     date: String,
 
     ) {
+
+    val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+
+    val monthlySpendingData = remember {
+        months.associateWith { List(30) { (0..100).random() } }
+    }
 
 
     Column(
@@ -97,6 +114,14 @@ fun HomeScreen(
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.dark_green)
+        )
+
+
+
+        MonthlyExpenses(
+            modifier = Modifier.padding(top = 15.dp),
+            months = months,
+            monthlySpendingData = monthlySpendingData
         )
 
 
