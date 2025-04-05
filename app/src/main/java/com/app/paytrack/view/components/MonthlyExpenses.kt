@@ -45,7 +45,7 @@ fun MonthlyExpenses(
     modifier: Modifier = Modifier,
     months: List<String>,
     monthlySpendingData: Map<String, List<Int>>
-){
+) {
 
     val currentMonth = LocalDate.now()
         .month
@@ -105,7 +105,6 @@ fun MonthlyExpenses(
             )
 
 
-
         }
 
 
@@ -129,12 +128,6 @@ fun MonthlyExpenses(
 
     }
 }
-
-
-
-
-
-
 
 
 @Preview(showSystemUi = true)
