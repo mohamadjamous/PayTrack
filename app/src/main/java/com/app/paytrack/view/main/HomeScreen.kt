@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -31,7 +34,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
+import com.app.paytrack.model.Category
 import com.app.paytrack.view.components.MonthlyExpenses
+import com.app.paytrack.view.components.MostUsedCategories
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -51,10 +56,35 @@ fun HomeScreen(
         months.associateWith { List(30) { (0..100).random() } }
     }
 
+    val list = listOf(
+        Category(
+            painter = painterResource(id = R.drawable.person),
+            "Lorem",
+            value = "7,000€"
+        ),
+        Category(
+            painter = painterResource(id = R.drawable.person),
+            "Lorem",
+            value = "7,000€"
+        ),
+        Category(
+            painter = painterResource(id = R.drawable.person),
+            "Lorem",
+            value = "7,000€"
+        ),
+        Category(
+            painter = painterResource(id = R.drawable.person),
+            "Lorem",
+            value = "7,000€"
+        )
+    )
+
 
     Column(
         modifier = Modifier.padding(15.dp)
+            .verticalScroll(rememberScrollState()),
     ) {
+
         Text(
             modifier = Modifier.clickable {
                 onSignOutClick()
@@ -107,56 +137,62 @@ fun HomeScreen(
         }
 
 
+        Spacer(modifier = Modifier.height(50.dp))
+
         // Daily expenses chart
         Text(
-            modifier = Modifier.padding(top = 40.dp),
             text = stringResource(id = R.string.monthly_expenses),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.dark_green)
         )
 
-
-
         MonthlyExpenses(
-            modifier = Modifier.padding(top = 15.dp),
+            modifier = Modifier.padding(top = 20.dp),
             months = months,
             monthlySpendingData = monthlySpendingData
         )
 
 
+        Spacer(modifier = Modifier.height(50.dp))
+
         // Most used categories
         Text(
-            modifier = Modifier.padding(top = 40.dp),
             text = stringResource(id = R.string.most_used_categories),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.dark_green)
         )
 
+        MostUsedCategories(
+            modifier = Modifier.padding(top = 20.dp),
+            list = list
+        )
+
+        Spacer(modifier = Modifier.height(50.dp))
 
         // Expenses categories
-
         Text(
-            modifier = Modifier.padding(top = 40.dp),
             text = stringResource(id = R.string.expenses_categories),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.dark_green)
         )
 
+        Spacer(modifier = Modifier.height(50.dp))
+
         // Reading icon
         Text(
-            modifier = Modifier.padding(top = 40.dp),
             text = stringResource(id = R.string.reading),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.dark_green)
         )
-
     }
+
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showSystemUi = true)
 @Composable
 fun HomeScreenPreview(modifier: Modifier = Modifier) {

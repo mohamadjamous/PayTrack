@@ -40,6 +40,7 @@ fun PayTrackTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+
     val colorScheme = when {
         else -> LightColorScheme
     }

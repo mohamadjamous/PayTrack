@@ -1,53 +1,58 @@
 package com.app.paytrack.view.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.app.paytrack.R
+import com.app.paytrack.model.Category
 
 @Composable
-fun MostUsedCategories(modifier: Modifier = Modifier) {
+fun MostUsedCategories(
+    modifier: Modifier = Modifier,
+    list: List<Category>
+) {
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .height(50.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(color = colorResource(id = R.color.green)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-
-
-        Row {
-
-
+    Column(modifier = modifier) {
+        list.take(4).forEach { category ->
+            CategoryItem(
+                painter = category.painter,
+                name = category.name,
+                value = category.value
+            )
         }
-
-
     }
-
 }
 
 
 @Preview(showSystemUi = true)
 @Composable
 fun MostUsedCategoriesPreview(modifier: Modifier = Modifier) {
-    MostUsedCategories()
+
+    val list = listOf(
+        Category(
+            painter = painterResource(id = R.drawable.person),
+            "Lorem",
+            value = "7,000€"
+        ),
+        Category(
+            painter = painterResource(id = R.drawable.person),
+            "Lorem",
+            value = "7,000€"
+        ),
+        Category(
+            painter = painterResource(id = R.drawable.person),
+            "Lorem",
+            value = "7,000€"
+        ),
+        Category(
+            painter = painterResource(id = R.drawable.person),
+            "Lorem",
+            value = "7,000€"
+        )
+    )
+    MostUsedCategories(list = list)
 }
