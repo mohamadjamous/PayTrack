@@ -43,10 +43,10 @@ fun CategoryItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(top = 5.dp, bottom = 5.dp)
             .height(60.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(color = colorResource(id = R.color.green)),
+            .background(color = colorResource(id = R.color.dark_green_1)),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
 

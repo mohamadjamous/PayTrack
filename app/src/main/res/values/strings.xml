@@ -36,6 +36,6 @@
     <string name="cancel">Cancel</string>
     <string name="monthly_expenses">Monthly Expenses</string>
     <string name="most_used_categories">Most Used Categories</string>
-    <string name="expenses_categories">expense categories</string>
+    <string name="expenses_categories">Expense Categories</string>
     <string name="reading">Reading</string>
 </resources>

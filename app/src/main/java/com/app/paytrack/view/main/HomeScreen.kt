@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
 import com.app.paytrack.model.Category
+import com.app.paytrack.view.components.Categories
 import com.app.paytrack.view.components.MonthlyExpenses
 import com.app.paytrack.view.components.MostUsedCategories
 
@@ -59,23 +60,24 @@ fun HomeScreen(
     val list = listOf(
         Category(
             painter = painterResource(id = R.drawable.person),
-            "Lorem",
-            value = "7,000€"
+            name = "Lorem",
+            value = "7,000€",
+            date = "June 7",
+            desc = "Dum & Simple"
         ),
         Category(
             painter = painterResource(id = R.drawable.person),
-            "Lorem",
-            value = "7,000€"
+            name = "Lorem",
+            value = "7,000€",
+            date = "June 7",
+            desc = "Dum & Simple"
         ),
         Category(
             painter = painterResource(id = R.drawable.person),
-            "Lorem",
-            value = "7,000€"
-        ),
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            "Lorem",
-            value = "7,000€"
+            name = "Lorem",
+            value = "7,000€",
+            date = "June 7",
+            desc = "Dum & Simple"
         )
     )
 
@@ -148,7 +150,7 @@ fun HomeScreen(
         )
 
         MonthlyExpenses(
-            modifier = Modifier.padding(top = 20.dp),
+            modifier = Modifier.padding(top = 15.dp),
             months = months,
             monthlySpendingData = monthlySpendingData
         )
@@ -165,7 +167,7 @@ fun HomeScreen(
         )
 
         MostUsedCategories(
-            modifier = Modifier.padding(top = 20.dp),
+            modifier = Modifier.padding(top = 15.dp),
             list = list
         )
 
@@ -178,6 +180,10 @@ fun HomeScreen(
             fontWeight = FontWeight.SemiBold,
             color = colorResource(id = R.color.dark_green)
         )
+
+        Categories(
+            modifier = Modifier.padding(top = 15.dp),
+            list = list)
 
         Spacer(modifier = Modifier.height(50.dp))
 

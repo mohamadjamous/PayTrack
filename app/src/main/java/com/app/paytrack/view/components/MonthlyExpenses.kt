@@ -60,7 +60,7 @@ fun MonthlyExpenses(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(color = colorResource(id = R.color.green)),
+            .background(color = colorResource(id = R.color.dark_green_1)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
