@@ -138,7 +138,6 @@ fun HomeScreen(
             }
         }
 
-
         Spacer(modifier = Modifier.height(50.dp))
 
         // Daily expenses chart
