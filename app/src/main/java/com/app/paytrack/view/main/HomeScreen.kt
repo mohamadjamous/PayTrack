@@ -8,13 +8,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -82,117 +87,134 @@ fun HomeScreen(
     )
 
 
-    Column(
-        modifier = Modifier.padding(15.dp)
-            .verticalScroll(rememberScrollState()),
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        Text(
-            modifier = Modifier.clickable {
-                onSignOutClick()
-            },
-            text = "Sign out"
-        )
-
-        // Current date "Sun, June 5"
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-
+                .padding(15.dp)
+                .verticalScroll(rememberScrollState()),
         ) {
-            // Centered Text
+
             Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = date,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.dark_green),
-                fontSize = 22.sp
+                modifier = Modifier.clickable {
+                    onSignOutClick()
+                },
+                text = "Sign out"
             )
 
-            // Icons aligned to the end
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                IconButton(
-                    onClick = { /* your logic */ }
-                ) {
-                    Icon(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(id = R.drawable.notification),
-                        contentDescription = null,
-                        tint = Color.Unspecified
-                    )
-                }
+            // Current date "Sun, June 5"
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
 
-                IconButton(
-                    onClick = { /* your logic */ }
+            ) {
+                // Centered Text
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = date,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.dark_green),
+                    fontSize = 22.sp
+                )
+
+                // Icons aligned to the end
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(id = R.drawable.settings),
-                        contentDescription = null,
-                        tint = Color.Unspecified
-                    )
+                    IconButton(
+                        onClick = { /* your logic */ }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(id = R.drawable.notification),
+                            contentDescription = null,
+                            tint = Color.Unspecified
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { /* your logic */ }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(id = R.drawable.settings),
+                            contentDescription = null,
+                            tint = Color.Unspecified
+                        )
+                    }
                 }
             }
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            // Daily expenses chart
+            Text(
+                text = stringResource(id = R.string.monthly_expenses),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.dark_green)
+            )
+
+            MonthlyExpenses(
+                modifier = Modifier.padding(top = 15.dp),
+                months = months,
+                monthlySpendingData = monthlySpendingData
+            )
+
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            // Most used categories
+            Text(
+                text = stringResource(id = R.string.most_used_categories),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.dark_green)
+            )
+
+            MostUsedCategories(
+                modifier = Modifier.padding(top = 15.dp),
+                list = list
+            )
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            // Expenses categories
+            Text(
+                text = stringResource(id = R.string.expenses_categories),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.dark_green)
+            )
+
+            Categories(
+                modifier = Modifier.padding(top = 15.dp),
+                list = list
+            )
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            // Reading icon
+            Text(
+                text = stringResource(id = R.string.reading),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.dark_green)
+            )
         }
 
-        Spacer(modifier = Modifier.height(50.dp))
+        FloatingActionButton(
+            modifier = Modifier
+                .align(Alignment.BottomEnd) // Align the FAB to the bottom right
+                .padding(15.dp), // Optional padding to give some space from edges
+            onClick = {
 
-        // Daily expenses chart
-        Text(
-            text = stringResource(id = R.string.monthly_expenses),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = colorResource(id = R.color.dark_green)
-        )
-
-        MonthlyExpenses(
-            modifier = Modifier.padding(top = 15.dp),
-            months = months,
-            monthlySpendingData = monthlySpendingData
-        )
-
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        // Most used categories
-        Text(
-            text = stringResource(id = R.string.most_used_categories),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = colorResource(id = R.color.dark_green)
-        )
-
-        MostUsedCategories(
-            modifier = Modifier.padding(top = 15.dp),
-            list = list
-        )
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        // Expenses categories
-        Text(
-            text = stringResource(id = R.string.expenses_categories),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = colorResource(id = R.color.dark_green)
-        )
-
-        Categories(
-            modifier = Modifier.padding(top = 15.dp),
-            list = list)
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        // Reading icon
-        Text(
-            text = stringResource(id = R.string.reading),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = colorResource(id = R.color.dark_green)
-        )
+            },
+            shape = CircleShape,
+        ) {
+            Icon(Icons.Filled.Add, "Floating action button.", tint = Color.Black)
+        }
     }
 
 }
