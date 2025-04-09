@@ -2,10 +2,12 @@ package com.app.paytrack.view.graphs
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -43,6 +45,7 @@ import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.CreateAccountScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.viewmodel.CreateAccountViewModel
+import com.app.paytrack.viewmodel.HomeViewModel
 import com.app.paytrack.viewmodel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
@@ -50,6 +53,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RootNavGraph(
     modifier: Modifier = Modifier,
@@ -255,7 +259,14 @@ fun RootNavGraph(
                 val date: String = LocalDate.now().format(
                     DateTimeFormatter.ofPattern("EEE, MMMM d", Locale.ENGLISH)
                 )
+
+
+
                 composable<Screen.Home> {
+
+                    // init view model
+                    val viewModel = viewModel<HomeViewModel>()
+
                     HomeScreen(
                         date = date,
                         onSignOutClick = {
@@ -269,7 +280,8 @@ fun RootNavGraph(
 
                                 navController.popBackStack()
                             }
-                        }
+                        },
+                        viewModel = viewModel
                     )
                 }
 
