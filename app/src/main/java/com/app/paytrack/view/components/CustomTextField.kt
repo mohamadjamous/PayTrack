@@ -29,6 +29,7 @@ fun CustomTextField(
     value: String,
     hint: String = "",
     leadingIcon: ImageVector? = null,
+    leadingIcon1: @Composable (() -> Unit)? = null,
     passwordVisible: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     onValueChange: (String) -> Unit
@@ -42,13 +43,16 @@ fun CustomTextField(
             Text(text = hint)
         },
         leadingIcon = {
-            if (leadingIcon != null)
+            if (leadingIcon != null){
                 Icon(
                     modifier = Modifier.size(30.dp),
                     imageVector = leadingIcon,
                     contentDescription = null,
                     tint = colorResource(id = R.color.dark_green)
                 )
+            }else {
+                leadingIcon1?.invoke()
+            }
         },
         visualTransformation = if (!passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         shape = RoundedCornerShape(12.dp),

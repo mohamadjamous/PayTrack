@@ -235,18 +235,20 @@ fun HomeScreen(
 
         // Show BottomSheet if isBottomSheetVisible is true
         if (isBottomSheetVisible) {
-            BottomSheet(showBottomSheet = isBottomSheetVisible, onDismiss = { isBottomSheetVisible = false })
+            BottomSheet(
+                showBottomSheet = isBottomSheetVisible,
+                onDismiss = { isBottomSheetVisible = false },
+                onSubmit = { type, amount, category ->
+//                    viewModel.submitData(type, amount, category)
+                    isBottomSheetVisible = false
+                }
+            )
         }
 
 
     }
 
 }
-
-
-
-
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)
