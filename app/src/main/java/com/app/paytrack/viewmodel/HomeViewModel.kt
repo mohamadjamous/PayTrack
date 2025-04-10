@@ -56,6 +56,10 @@ class HomeViewModel: ViewModel() {
         viewModelScope.launch {
 
             val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
+            println("DebugValue: $userEmail" )
+            println("DebugValue: $amount" )
+            println("DebugValue: $type" )
+
             val result = repo.updateBalance(
                 userEmail = userEmail,
                 accountId = "0",

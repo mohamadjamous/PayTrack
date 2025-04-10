@@ -111,7 +111,7 @@ fun HomeScreen(
     val context = LocalContext.current
 
     var balance by remember { mutableStateOf(0.0)}
-    var showBalanceProgress by remember { mutableStateOf(false)}
+    var showBalanceProgress by remember { mutableStateOf(true)}
 
     LaunchedEffect(balanceState.value) {
 
@@ -285,7 +285,6 @@ fun HomeScreen(
                 onSubmit = { type, amount, category ->
 
                     viewModel.updateBalance(amount = amount, type = type)
-
 
                     // Remove to update with state
                     isBottomSheetVisible = false

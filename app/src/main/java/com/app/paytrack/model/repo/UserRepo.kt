@@ -85,53 +85,59 @@ class UserRepo {
         type: String
     ): Boolean {
         return try {
+
             suspendCancellableCoroutine { continuation ->
+
                 fireStore.collection(Collections.Users.value)
                     .whereEqualTo("email", userEmail)
+                    .limit(1)
                     .get()
                     .addOnSuccessListener { querySnapshot ->
+
                         if (!querySnapshot.isEmpty) {
+
                             val userDoc = querySnapshot.documents[0]
                             val documentId = userDoc.id
+                            var updatedBalance: Double
 
-                            // Fetch the current balance
+                            // Retrieve the 'accounts' field as a map from the user document
+                            val accounts = userDoc.get("accounts") as? Map<String, Map<String, Any>> ?: emptyMap()
+                            val targetAccount = accounts[accountId]
+
+                            // Getting the current balance
+                            updatedBalance = (targetAccount?.get("balance") as? Number)?.toDouble() ?: 0.0
+                            val name = (targetAccount?.get("name") as? String)?.toString() ?: 0.0
+
+                            // Update the current balance based on the transaction type
+                            if (type == "0") {
+                                updatedBalance += amount
+                            } else {
+                                updatedBalance -= amount
+                            }
+
+                            val account = Account(
+                                name = name.toString(),
+                                balance = updatedBalance
+                            )
+
+                            // Upload info
                             fireStore.collection(Collections.Users.value)
                                 .document(documentId)
                                 .collection("accounts")
                                 .document(accountId)
-                                .get()
-                                .addOnSuccessListener { accountSnapshot ->
-                                    val currentBalance = accountSnapshot.getDouble("balance") ?: 0.0
+                                .update("balance", updatedBalance)
+                                .addOnSuccessListener {
 
-                                    // Add or subtract based on type
-                                    val updatedBalance = if (type == "0") {
-                                        currentBalance + amount
-                                    } else {
-                                        currentBalance - amount
-                                    }
-
-                                    // Update the balance
-                                    fireStore.collection(Collections.Users.value)
-                                        .document(documentId)
-                                        .collection("accounts")
-                                        .document(accountId)
-                                        .update("balance", updatedBalance)
-                                        .addOnSuccessListener {
-                                            if (continuation.isActive) continuation.resume(
-                                                true,
-                                                null
-                                            )
-                                        }
-                                        .addOnFailureListener { e ->
-                                            if (continuation.isActive) continuation.resume(
-                                                false,
-                                                null
-                                            )
-                                        }
-
+                                    if (continuation.isActive) continuation.resume(
+                                        true,
+                                        null
+                                    )
                                 }
                                 .addOnFailureListener { e ->
-                                    if (continuation.isActive) continuation.resume(false, null)
+                                    if (continuation.isActive) continuation.resume(
+                                        false,
+                                        null
+                                    )
                                 }
 
                         } else {
