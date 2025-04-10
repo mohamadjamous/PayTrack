@@ -23,7 +23,6 @@ class HomeViewModel: ViewModel() {
     private val repo = UserRepo()
 
 
-
     init {
         getCurrentBalance()
     }
@@ -32,11 +31,14 @@ class HomeViewModel: ViewModel() {
     private fun getCurrentBalance() {
 
         viewModelScope.launch {
+
             val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
 
             try {
+
                 val result = repo.getBalance(email = userEmail, accountId = "0")
                 _stateBalance.value = result
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 // Log or notify UI of the error

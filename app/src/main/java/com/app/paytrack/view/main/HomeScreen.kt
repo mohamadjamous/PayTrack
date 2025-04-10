@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,8 +62,6 @@ import com.app.paytrack.view.components.MostUsedCategories
 import com.app.paytrack.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -72,7 +72,7 @@ fun HomeScreen(
 
     // State to toggle bottom sheet visibility
     var isBottomSheetVisible by remember { mutableStateOf(false) }
-    var balance by remember { mutableStateOf(0.0)}
+
 
     val months = listOf(
         "January", "February", "March", "April", "May", "June",
@@ -110,12 +110,16 @@ fun HomeScreen(
     val balanceState = viewModel.balance.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(balanceState) {
+    var balance by remember { mutableStateOf(0.0)}
+    var showBalanceProgress by remember { mutableStateOf(false)}
+
+    LaunchedEffect(balanceState.value) {
 
         if (balanceState.value > 0.0){
             balance = balanceState.value
+            showBalanceProgress = false
         }else{
-            Toast.makeText(context, "Error getting balance", Toast.LENGTH_LONG).show()
+            showBalanceProgress = false
         }
     }
 
@@ -143,20 +147,41 @@ fun HomeScreen(
             ) {
                 // Centered Text
 
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = "$$balance",
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(id = R.color.green),
-                    fontSize = 25.sp
-                )
+               Column (
+                   horizontalAlignment = Alignment.CenterHorizontally,
+               ) {
 
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = date,
-                    color = colorResource(id = R.color.dark_green),
-                    fontSize = 16.sp
-                )
+                  Box (
+                      contentAlignment = Alignment.Center,
+                      modifier = Modifier
+                  )
+                  {
+
+                      Text(
+                          modifier = Modifier.fillMaxWidth(),
+                          text = "$$balance",
+                          fontWeight = FontWeight.Bold,
+                          color = colorResource(id = R.color.green),
+                          fontSize = 25.sp,
+                          textAlign = TextAlign.Center
+                      )
+
+                      if (showBalanceProgress){
+                          CircularProgressIndicator(
+                              color = colorResource(id = R.color.green)
+                          )
+                      }
+
+                  }
+
+                   Text(
+                       modifier = Modifier.padding(top = 10.dp),
+                       text = date,
+                       color = colorResource(id = R.color.dark_green),
+                       fontSize = 16.sp,
+                       textAlign = TextAlign.Center
+                   )
+               }
 
                 // Icons aligned to the end
                 Row(

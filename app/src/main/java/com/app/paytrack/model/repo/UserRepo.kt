@@ -155,55 +155,50 @@ class UserRepo {
     }
 
     suspend fun getBalance(email: String, accountId: String): Double {
+
         return try {
             suspendCancellableCoroutine { continuation ->
-                fireStore.collection(Collections.Users.value)
+
+                fireStore
+                    .collection(Collections.Users.value)
                     .whereEqualTo("email", email)
+                    .limit(1)
                     .get()
                     .addOnSuccessListener { querySnapshot ->
-                        if (!querySnapshot.isEmpty) {
-                            val userDoc = querySnapshot.documents[0]
-                            val documentId = userDoc.id
 
-                            fireStore.collection(Collections.Users.value)
-                                .document(documentId)
-                                .collection("accounts")
-                                .document(accountId)
-                                .get()
-                                .addOnSuccessListener { accountSnapshot ->
-                                    val balanceRaw = accountSnapshot.get("balance") as? List<Map<String, Any>>
-                                    val balanceList = balanceRaw?.mapNotNull {
-                                        (it["balance"] as? Number)?.toDouble()
-                                    } ?: emptyList()
+                        val userDoc = querySnapshot.documents[0]
 
-                                    if (balanceList.isNotEmpty()) {
-                                        val balance = balanceList[0]
-                                        if (continuation.isActive) continuation.resume(balance, null)
-                                    } else{
-                                        if (continuation.isActive) continuation.resume(0.0, null)
-                                    }
-                                }
-                                .addOnFailureListener { e ->
-                                    println("Error fetching account: ${e.message}")
-                                    if (continuation.isActive) continuation.resume(0.0, null)
-                                }
+                        // Retrieve the 'accounts' field as a map from the user document
+                        val accounts = userDoc.get("accounts") as? Map<String, Map<String, Any>> ?: emptyMap()
+                        val targetAccount = accounts[accountId]
+
+                        if (targetAccount != null) {
+
+                            val balance = (targetAccount["balance"] as? Number)?.toDouble() ?: 0.0
+                            println("BalanceValue: $balance")
+
+                            if (continuation.isActive) continuation.resume(balance, null)
+
                         } else {
-                            println("User not found")
+                            println("Account with ID not found.")
                             if (continuation.isActive) continuation.resume(0.0, null)
                         }
+
                     }
                     .addOnFailureListener { e ->
-                        println("Error finding user: ${e.message}")
-                        if (continuation.isActive) continuation.resume(0.0, null)
+                        println("ErrorFetchingUser: ${e.message}")
                     }
+
             }
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
-            println("Error getting balance: ${e.message}")
+            println("ErrorGettingBalance: ${e.message}")
             0.0
         }
     }
+
+
 
 
 
