@@ -2,9 +2,7 @@ package com.app.paytrack.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.paytrack.model.SignInState
 import com.app.paytrack.model.UpdateBalanceState
-import com.app.paytrack.model.repo.AuthRepo
 import com.app.paytrack.model.repo.UserRepo
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,10 +13,10 @@ class HomeViewModel: ViewModel() {
 
 
     private val _state = MutableStateFlow(UpdateBalanceState())
-    val state = _state.asStateFlow()
+    val updateBalanceState = _state.asStateFlow()
 
     private val _stateBalance = MutableStateFlow(0.0)
-    val balance = _stateBalance.asStateFlow()
+    val balanceState = _stateBalance.asStateFlow()
 
     private val repo = UserRepo()
 
@@ -28,7 +26,7 @@ class HomeViewModel: ViewModel() {
     }
 
 
-    private fun getCurrentBalance() {
+    fun getCurrentBalance() {
 
         viewModelScope.launch {
 
@@ -62,7 +60,7 @@ class HomeViewModel: ViewModel() {
 
             val result = repo.updateBalance(
                 userEmail = userEmail,
-                accountId = "0",
+                accountId = "0", // Static input
                 amount = amount.toDouble(),
                 type = type
             )

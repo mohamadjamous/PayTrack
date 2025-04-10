@@ -106,7 +106,6 @@ class UserRepo {
 
                             // Getting the current balance
                             updatedBalance = (targetAccount?.get("balance") as? Number)?.toDouble() ?: 0.0
-                            val name = (targetAccount?.get("name") as? String)?.toString() ?: 0.0
 
                             // Update the current balance based on the transaction type
                             if (type == "0") {
@@ -115,17 +114,11 @@ class UserRepo {
                                 updatedBalance -= amount
                             }
 
-                            val account = Account(
-                                name = name.toString(),
-                                balance = updatedBalance
-                            )
 
                             // Upload info
                             fireStore.collection(Collections.Users.value)
-                                .document(documentId)
-                                .collection("accounts")
-                                .document(accountId)
-                                .update("balance", updatedBalance)
+                                .document(documentId) // User document
+                                .update("accounts.$accountId.balance", updatedBalance) // Dot notation to target nested map
                                 .addOnSuccessListener {
 
                                     if (continuation.isActive) continuation.resume(
@@ -134,6 +127,7 @@ class UserRepo {
                                     )
                                 }
                                 .addOnFailureListener { e ->
+                                    println("DebugError: ${e.message}" )
                                     if (continuation.isActive) continuation.resume(
                                         false,
                                         null
@@ -141,14 +135,17 @@ class UserRepo {
                                 }
 
                         } else {
+                            println("DebugError: User not found" )
                             if (continuation.isActive) continuation.resume(false, null)
                         }
                     }
                     .addOnFailureListener { e ->
+                        println("DebugError: ${e.message}" )
                         if (continuation.isActive) continuation.resumeWithException(e)
                     }
             }
         } catch (e: Exception) {
+            println("DebugError: ${e.message}" )
             e.printStackTrace()
             if (e is CancellationException) throw e
             false

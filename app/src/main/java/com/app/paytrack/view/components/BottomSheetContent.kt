@@ -120,7 +120,7 @@ fun BottomSheetContent(
                     text = "Submit"
                 ) {
                     // Handle income submit
-                    onSubmit("Income", incomeAmount, null)
+                    onSubmit("0", incomeAmount, null)
                 }
             }
 
@@ -177,7 +177,7 @@ fun BottomSheetContent(
                         text = "Submit"
                     ) {
                         // Handle income submit
-                        onSubmit("Expense", expenseAmount, selectedCategory)
+                        onSubmit("1", expenseAmount, selectedCategory)
                     }
 
                 }

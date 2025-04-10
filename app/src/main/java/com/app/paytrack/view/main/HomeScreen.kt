@@ -3,43 +3,31 @@ package com.app.paytrack.view.main
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +48,6 @@ import com.app.paytrack.view.components.Categories
 import com.app.paytrack.view.components.MonthlyExpenses
 import com.app.paytrack.view.components.MostUsedCategories
 import com.app.paytrack.viewmodel.HomeViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -107,11 +94,13 @@ fun HomeScreen(
         )
     )
 
-    val balanceState = viewModel.balance.collectAsState()
+    val balanceState = viewModel.balanceState.collectAsState()
+    val updateBalanceState = viewModel.updateBalanceState.collectAsState().value
     val context = LocalContext.current
 
     var balance by remember { mutableStateOf(0.0)}
     var showBalanceProgress by remember { mutableStateOf(true)}
+
 
     LaunchedEffect(balanceState.value) {
 
@@ -121,6 +110,33 @@ fun HomeScreen(
         }else{
             showBalanceProgress = false
         }
+    }
+
+    LaunchedEffect(balanceState.value) {
+
+        if (balanceState.value > 0.0){
+            balance = balanceState.value
+            showBalanceProgress = false
+        }else{
+            showBalanceProgress = false
+        }
+    }
+
+    // Handle update error
+    LaunchedEffect(updateBalanceState.errorMessage) {
+        updateBalanceState.errorMessage?.let { error ->
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // Handle update success
+    LaunchedEffect(updateBalanceState.success) {
+
+        if (updateBalanceState.success){
+            showBalanceProgress = true
+            viewModel.getCurrentBalance()
+        }
+
     }
 
 
