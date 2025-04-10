@@ -129,6 +129,7 @@ fun HomeScreen(
         }
     }
 
+
     // Handle update success
     LaunchedEffect(updateBalanceState.success) {
 
@@ -136,7 +137,6 @@ fun HomeScreen(
             showBalanceProgress = true
             viewModel.getCurrentBalance()
         }
-
     }
 
 
