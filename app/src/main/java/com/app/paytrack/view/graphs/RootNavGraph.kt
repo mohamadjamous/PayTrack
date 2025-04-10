@@ -110,8 +110,6 @@ fun RootNavGraph(
             } else {
                 Graph.Auth
             },
-            enterTransition = { slideInHorizontally() },
-            exitTransition = { slideOutHorizontally() }
         ) {
 
             // On boarding nav graph
@@ -119,13 +117,17 @@ fun RootNavGraph(
                 startDestination = startDestination
             ) {
 
-                composable<Screen.Welcome> {
+                composable<Screen.Welcome>(
+                    enterTransition = { slideInHorizontally() },
+                    exitTransition = { slideOutHorizontally() }
+                ) {
 
                     WelcomeScreen(navController = navController)
                 }
 
                 composable<Screen.OnBoarding>(
-
+                    enterTransition = { slideInHorizontally() },
+                    exitTransition = { slideOutHorizontally() }
                 ) {
                     OnBoardingScreen(
                         navController = navController
@@ -133,7 +135,8 @@ fun RootNavGraph(
                 }
 
                 composable<Screen.SignIn>(
-
+                    enterTransition = { slideInHorizontally() },
+                    exitTransition = { slideOutHorizontally() }
                 ) {
 
                     val viewModel = viewModel<SignInViewModel>()
@@ -178,7 +181,8 @@ fun RootNavGraph(
 
 
                 composable<Screen.SignUp>(
-
+                    enterTransition = { slideInHorizontally() },
+                    exitTransition = { slideOutHorizontally() }
                 ) {
 
                     val viewModel = viewModel<SignUpViewModel>()
@@ -221,7 +225,10 @@ fun RootNavGraph(
                     )
                 }
 
-                composable<Screen.ForgotPassword> {
+                composable<Screen.ForgotPassword>(
+                    enterTransition = { slideInHorizontally() },
+                    exitTransition = { slideOutHorizontally() }
+                ) {
 
                     val viewModel = viewModel<SignInViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -234,7 +241,8 @@ fun RootNavGraph(
                 }
 
                 composable<Screen.CreateAccount>(
-
+                    enterTransition = { slideInHorizontally() },
+                    exitTransition = { slideOutHorizontally() }
                 ) {
 
                     val viewModel = viewModel<CreateAccountViewModel>()
@@ -261,7 +269,6 @@ fun RootNavGraph(
                 )
 
 
-
                 composable<Screen.Home> {
 
                     // init view model
@@ -269,6 +276,16 @@ fun RootNavGraph(
 
                     HomeScreen(
                         date = date,
+                        viewModel = viewModel
+                    )
+                }
+
+                composable<Screen.Charts> {
+                   ChartsScreen()
+                }
+
+                composable<Screen.Profile> {
+                    ProfileScreen(
                         onSignOutClick = {
                             lifecycleScope.launch {
                                 googleAuthUiClient.signOut()
@@ -281,16 +298,7 @@ fun RootNavGraph(
                                 navController.popBackStack()
                             }
                         },
-                        viewModel = viewModel
                     )
-                }
-
-                composable<Screen.Charts> {
-                   ChartsScreen()
-                }
-
-                composable<Screen.Profile> {
-                    ProfileScreen()
                 }
 
             }
@@ -298,25 +306,6 @@ fun RootNavGraph(
         }
     }
 
-}
-
-
-suspend fun isUserCreateAccount(): Boolean {
-
-    // access user firestore document
-    val firebaseUser = FirebaseAuth.getInstance().currentUser
-    val repo = AuthRepo()
-
-    // Return if no user is signed in
-    if (firebaseUser == null) {
-        return false
-    }
-
-    val user = repo.getUserAccount(id = firebaseUser.uid)
-
-    // check if user has at least one account
-    // return true or false accordingly
-    return user.account != null
 }
 
 

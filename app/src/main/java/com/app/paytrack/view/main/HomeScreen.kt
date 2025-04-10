@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onSignOutClick: () -> Unit,
+
     date: String,
     viewModel: HomeViewModel
     ) {
@@ -132,18 +132,12 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
 
-            Text(
-                modifier = Modifier.clickable {
-                    onSignOutClick()
-                },
-                text = "Sign out"
-            )
 
             // Current date "Sun, June 5"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-
+                    .padding(top = 20.dp)
             ) {
                 // Centered Text
 
@@ -162,7 +156,7 @@ fun HomeScreen(
                           text = "$$balance",
                           fontWeight = FontWeight.Bold,
                           color = colorResource(id = R.color.green),
-                          fontSize = 25.sp,
+                          fontSize = 27.sp,
                           textAlign = TextAlign.Center
                       )
 
@@ -312,7 +306,6 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview(modifier: Modifier = Modifier) {
     HomeScreen(
-        onSignOutClick = {},
         date = "Sun, June 5",
         viewModel = HomeViewModel()
     )
