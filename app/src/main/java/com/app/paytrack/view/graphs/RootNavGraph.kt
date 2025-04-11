@@ -46,6 +46,7 @@ import com.app.paytrack.view.sign_in.CreateAccountScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
 import com.app.paytrack.viewmodel.CreateAccountViewModel
 import com.app.paytrack.viewmodel.HomeViewModel
+import com.app.paytrack.viewmodel.ProfileViewModel
 import com.app.paytrack.viewmodel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
@@ -285,7 +286,12 @@ fun RootNavGraph(
                 }
 
                 composable<Screen.Profile> {
+
+                    // init view model
+                    val viewModel = viewModel<ProfileViewModel>()
+
                     ProfileScreen(
+                        viewModel = viewModel,
                         onSignOutClick = {
                             lifecycleScope.launch {
                                 googleAuthUiClient.signOut()

@@ -39,4 +39,5 @@
     <string name="expenses_categories">Expense Categories</string>
     <string name="reading">Reading</string>
     <string name="add_balance">Add Expense / Income</string>
+    <string name="log_out">Logout</string>
 </resources>

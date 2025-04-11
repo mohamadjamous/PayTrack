@@ -2,6 +2,8 @@ package com.app.paytrack.model.repo
 
 import com.app.paytrack.model.Account
 import com.app.paytrack.model.Collections
+import com.app.paytrack.model.ProfileState
+import com.app.paytrack.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -181,46 +183,17 @@ class UserRepo {
                     .get()
                     .addOnSuccessListener { querySnapshot ->
 
-//                        val userDoc = querySnapshot.documents[0]
-//
-//                        // Retrieve the 'accounts' field as a map from the user document
-//                        val accounts = userDoc.get("accounts") as? Map<String, Map<String, Any>> ?: emptyMap()
-//                        val targetAccount = accounts[accountId]
-//
-//                        // Update or create category if it does not exist and add the transaction to the array inside the targetAccount map
-//
-//                        /*
-//
-//                        Category:
-//
-//                        id
-//                        name
-//                        transactions
-//                        [
-//                            0
-//                                date
-//                                amount
-//                                type // should indicate if it's income or expense
-//                                current balance
-//
-//                             1
-//                                date
-//                                amount
-//                                type // should indicate if it's income or expense
-//                                current balance
-//                        ]
-//
-//                         */
-
                         val userDoc = querySnapshot.documents[0]
 
                         // Retrieve the 'accounts' field as a map from the user document
-                        val accounts = userDoc.get("accounts") as? Map<String, Map<String, Any>> ?: emptyMap()
+                        val accounts =
+                            userDoc.get("accounts") as? Map<String, Map<String, Any>> ?: emptyMap()
                         val targetAccount = accounts[accountId]
 
                         if (targetAccount != null) {
 
-                            val userRef = fireStore.collection(Collections.Users.value).document(userDoc.id)
+                            val userRef =
+                                fireStore.collection(Collections.Users.value).document(userDoc.id)
 
                             // Generate a unique ID for the transaction (same as your data class)
                             val transactionId = UUID.randomUUID().toString()
@@ -235,7 +208,8 @@ class UserRepo {
                                 "balanceAfter" to balanceAfter,
                                 "accountId" to accountId,
                                 "type" to transactionType,
-                                "date" to System.currentTimeMillis().toInt() // Or Date().time.toInt()
+                                "date" to System.currentTimeMillis()
+                                    .toInt() // Or Date().time.toInt()
                             )
 
                             // Define path to this transaction inside the category
@@ -251,9 +225,7 @@ class UserRepo {
                                     println("Error adding transaction: ${e.message}")
                                     if (continuation.isActive) continuation.resume(false, null)
                                 }
-                        }
-
-                        else {
+                        } else {
                             if (continuation.isActive) continuation.resume(false, null)
                         }
 
@@ -318,4 +290,68 @@ class UserRepo {
     }
 
 
+    suspend fun fetchUserAccount(email: String) : ProfileState {
+
+        return try {
+            suspendCancellableCoroutine { continuation ->
+
+                fireStore.collection(Collections.Users.value)
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+
+                        if (!querySnapshot.isEmpty) {
+
+                            val userDoc = querySnapshot.documents[0]
+
+                            val name = userDoc.get("name") as String
+                            val email = userDoc.get("email") as String
+
+                            val user = User(name = name, email = email, isGoogleAccount = false)
+
+                            val state = ProfileState(
+                                success = true,
+                                user = user
+                            )
+
+                            if (continuation.isActive) continuation.resume(state, null)
+
+                        }else{
+
+                            val state = ProfileState(
+                                success = false,
+                                errorMessage = "Error getting user account"
+                            )
+
+                            if (continuation.isActive) continuation.resume(state, null)
+                        }
+                    }
+                    .addOnFailureListener { e ->
+
+                        val state = ProfileState(
+                            success = false,
+                            errorMessage = e.message
+                        )
+
+                        if (continuation.isActive) continuation.resume(state, null)
+                        println("ErrorFetchingUser: ${e.message}")
+
+                    }
+
+            }
+
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+            println("ErrorGettingBalance: ${e.message}")
+            val state = ProfileState(
+                success = false,
+                errorMessage = e.message
+            )
+            state
+        }
+
+    }
 }

@@ -32,11 +32,13 @@ fun CustomTextField(
     leadingIcon1: @Composable (() -> Unit)? = null,
     passwordVisible: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    onValueChange: (String) -> Unit
+    enabled: Boolean = true,
+    onValueChange: (String) -> Unit,
 ) {
 
     OutlinedTextField(
         modifier = modifier,
+        enabled = enabled,
         value = value,
         onValueChange = onValueChange,
         placeholder = {
