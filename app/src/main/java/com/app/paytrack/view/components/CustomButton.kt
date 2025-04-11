@@ -27,6 +27,7 @@ import com.app.paytrack.R
 fun CustomButton(
     modifier: Modifier = Modifier,
     text: String,
+    textSize: Int = 20,
     onClick: () -> Unit
 ) {
     Button(
@@ -45,7 +46,7 @@ fun CustomButton(
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             color = Color.White,
-            fontSize = 20.sp
+            fontSize = textSize.sp
         )
 
     }

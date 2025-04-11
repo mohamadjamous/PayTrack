@@ -40,4 +40,7 @@
     <string name="reading">Reading</string>
     <string name="add_balance">Add Expense / Income</string>
     <string name="log_out">Logout</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_desc">Delete your account to permanently remove your data and all associated information from our system. This action cannot be undone.</string>
+    <string name="confirm">Confirm</string>
 </resources>

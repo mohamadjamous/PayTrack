@@ -36,5 +36,12 @@ class ProfileViewModel : ViewModel() {
 
     }
 
+    fun deleteAccount() {
+
+        viewModelScope.launch {
+
+        }
+    }
+
 
 }

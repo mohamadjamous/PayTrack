@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,6 +37,7 @@ import com.app.paytrack.R
 import com.app.paytrack.view.components.CustomButton
 import com.app.paytrack.view.components.CustomDialog
 import com.app.paytrack.view.components.CustomTextField
+import com.app.paytrack.view.components.SimpleDialog
 import com.app.paytrack.viewmodel.ProfileViewModel
 import java.util.Locale
 
@@ -58,6 +62,10 @@ fun ProfileScreen(
 
     var showDialog by remember {
         mutableStateOf(true)
+    }
+
+    var showDeleteAccountDialog by remember {
+        mutableStateOf(false)
     }
 
 
@@ -142,15 +150,35 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             CustomButton(
-                modifier = Modifier.padding(bottom = 90.dp),
                 text = stringResource(id = R.string.log_out)
             ) {
                 onSignOutClick()
             }
+
+            Text(
+                modifier = Modifier
+                    .padding(top = 20.dp, bottom = 90.dp)
+                    .clickable {
+                        showDeleteAccountDialog = true
+                    },
+                text = stringResource(id = R.string.delete_account),
+                color = Color.Red
+            )
         }
 
-        CustomDialog(
-            show = showDialog)
+        CustomDialog(show = showDialog)
+
+        if (showDeleteAccountDialog) {
+            SimpleDialog(
+                onConfirm = {
+                    viewModel.deleteAccount()
+//                    showDialog = true
+                },
+                onCancel = {
+                    showDeleteAccountDialog = false
+                }
+            )
+        }
     }
 
 }
