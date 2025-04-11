@@ -32,6 +32,7 @@ class SignInViewModel : ViewModel() {
 
 
     fun signInUserEmailPassword(email: String, password: String) {
+
         viewModelScope.launch {
             try {
                 // Reset state before starting sign-in process

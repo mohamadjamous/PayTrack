@@ -82,6 +82,7 @@ fun RootNavGraph(
     val currentUser = FirebaseAuth.getInstance().currentUser
 
     var isMainScreen = false
+
     if (currentUser != null) {
         // User is signed in, navigate to the main screen
         isMainScreen = true
@@ -301,7 +302,9 @@ fun RootNavGraph(
                                     Toast.LENGTH_LONG
                                 ).show()
 
-                                navController.popBackStack()
+                                navController.navigate(Graph.Auth) {
+                                    popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                                }
                             }
                         },
                     )

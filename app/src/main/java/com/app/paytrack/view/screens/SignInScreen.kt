@@ -103,7 +103,9 @@ fun SignInScreen(
                     if (isRegistered) {
 
                         Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
-                        navController.navigate(Graph.Main)
+                        navController.navigate(Graph.Main){
+                            popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                        }
                     } else {
                         Toast.makeText(context, "Account is not registered!", Toast.LENGTH_LONG)
                             .show()
