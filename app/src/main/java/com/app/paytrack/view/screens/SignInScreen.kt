@@ -58,7 +58,8 @@ fun SignInScreen(
     state: SignInState,
     onGoogleSignInClick: () -> Unit,
     googleAuthUiClient: GoogleAuthUiClient? = null,
-    viewModel: SignInViewModel? = null
+    viewModel: SignInViewModel? = null,
+    onRegister: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -102,10 +103,8 @@ fun SignInScreen(
                     val isRegistered = AuthRepo().checkEmailExists(email)
                     if (isRegistered) {
 
-                        Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
-                        navController.navigate(Graph.Main){
-                            popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
-                        }
+                        onRegister()
+
                     } else {
                         Toast.makeText(context, "Account is not registered!", Toast.LENGTH_LONG)
                             .show()
@@ -117,10 +116,7 @@ fun SignInScreen(
             }
             // Email password sign in state
             else {
-                Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
-                navController.navigate(Graph.Main) {
-                    popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
-                }
+                onRegister()
 
             }
             viewModel?.resetState()
@@ -316,6 +312,7 @@ fun SignInScreenPreview(modifier: Modifier = Modifier) {
     SignInScreen(
         navController = rememberNavController(),
         state = SignInState(isSignInSuccessful = false, signInError = null),
-        onGoogleSignInClick = {}
+        onGoogleSignInClick = {},
+        onRegister = {}
     )
 }

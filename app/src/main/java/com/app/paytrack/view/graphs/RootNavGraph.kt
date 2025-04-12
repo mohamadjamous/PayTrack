@@ -17,7 +17,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -81,7 +83,9 @@ fun RootNavGraph(
     // Check if the user is signed in or signed up
     val currentUser = FirebaseAuth.getInstance().currentUser
 
-    var isMainScreen = false
+    var isMainScreen by remember {
+        mutableStateOf(false)
+    }
 
     if (currentUser != null) {
         // User is signed in, navigate to the main screen
@@ -177,6 +181,13 @@ fun RootNavGraph(
                             }
                         },
                         googleAuthUiClient = googleAuthUiClient,
+                        onRegister = {
+                            isMainScreen = true
+                            Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
+                            navController.navigate(Graph.Main){
+                                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                            }
+                        },
                         viewModel = viewModel
                     )
                 }
@@ -265,7 +276,6 @@ fun RootNavGraph(
                 startDestination = Screen.Home
             ) {
 
-
                 val date: String = LocalDate.now().format(
                     DateTimeFormatter.ofPattern("EEE, MMMM d", Locale.ENGLISH)
                 )
@@ -294,6 +304,7 @@ fun RootNavGraph(
                     ProfileScreen(
                         viewModel = viewModel,
                         onSignOutClick = {
+
                             lifecycleScope.launch {
                                 googleAuthUiClient.signOut()
                                 Toast.makeText(
@@ -301,6 +312,7 @@ fun RootNavGraph(
                                     "Signed out",
                                     Toast.LENGTH_LONG
                                 ).show()
+                                isMainScreen = false
 
                                 navController.navigate(Graph.Auth) {
                                     popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
