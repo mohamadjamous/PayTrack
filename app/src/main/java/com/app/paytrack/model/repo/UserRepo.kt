@@ -60,17 +60,13 @@ class UserRepo {
                                 }
                                 .addOnFailureListener { e ->
                                     println("Error updating accounts: ${e.message}")
-                                    if (continuation.isActive) {
-                                        continuation.resumeWithException(e)
-                                    }
+                                    continuation.resumeWithException(e)
                                 }
                         }
                     }
                     .addOnFailureListener { e ->
                         println("Error querying user: ${e.message}")
-                        if (continuation.isActive) {
-                            continuation.resumeWithException(e)
-                        }
+                        continuation.resumeWithException(e)
                     }
             }
         } catch (e: Exception) {
@@ -222,23 +218,23 @@ class UserRepo {
                                 userRef.update(transactionPath, transactionData)
                                     .addOnSuccessListener {
                                         println("Transaction added successfully with ID $transactionId.")
-                                        if (continuation.isActive) continuation.resume(true, null)
+                                        continuation.resume(true, null)
                                     }
                                     .addOnFailureListener { e ->
                                         println("Error adding transaction: ${e.message}")
-                                        if (continuation.isActive) continuation.resume(false, null)
+                                        continuation.resume(false, null)
                                     }
                             } else {
-                                if (continuation.isActive) continuation.resume(false, null)
+                                continuation.resume(false, null)
                             }
                         } else {
-                            if (continuation.isActive) continuation.resume(false, null)
+                            continuation.resume(false, null)
                         }
 
                     }
                     .addOnFailureListener { e ->
                         println("ErrorFetchingUser: ${e.message}")
-                        if (continuation.isActive) continuation.resume(false, null)
+                        continuation.resume(false, null)
                     }
 
             }
@@ -277,15 +273,15 @@ class UserRepo {
                                     (targetAccount["balance"] as? Number)?.toDouble() ?: 0.0
                                 println("BalanceValue: $balance")
 
-                                if (continuation.isActive) continuation.resume(balance, null)
+                                continuation.resume(balance, null)
 
                             } else {
                                 println("Account with ID not found.")
-                                if (continuation.isActive) continuation.resume(0.0, null)
+                                continuation.resume(0.0, null)
                             }
                         } else {
                             println("Account with ID not found.")
-                            if (continuation.isActive) continuation.resume(0.0, null)
+                            continuation.resume(0.0, null)
                         }
 
                     }
@@ -328,7 +324,7 @@ class UserRepo {
                                 user = user
                             )
 
-                            if (continuation.isActive) continuation.resume(state, null)
+                            continuation.resume(state, null)
 
                         } else {
 
@@ -337,7 +333,7 @@ class UserRepo {
                                 errorMessage = "Error getting user account"
                             )
 
-                            if (continuation.isActive) continuation.resume(state, null)
+                            continuation.resume(state, null)
                         }
                     }
                     .addOnFailureListener { e ->
@@ -347,7 +343,7 @@ class UserRepo {
                             errorMessage = e.message
                         )
 
-                        if (continuation.isActive) continuation.resume(state, null)
+                        continuation.resume(state, null)
                         println("ErrorFetchingUser: ${e.message}")
 
                     }

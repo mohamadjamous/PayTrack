@@ -6,6 +6,7 @@ import com.app.paytrack.model.UpdateBalanceState
 import com.app.paytrack.model.categories
 import com.app.paytrack.model.repo.UserRepo
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -51,11 +52,9 @@ class HomeViewModel : ViewModel() {
 
 
 
-    // update balance with negative or positive amount
     fun updateBalance(amount: String, type: String, categoryName: String?) {
 
         viewModelScope.launch {
-
             val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
 
             val result = repo.updateBalance(
@@ -66,75 +65,62 @@ class HomeViewModel : ViewModel() {
             )
 
             if (result) {
+                val transactionType = type.toInt()
+                val targetCategory = categories.find { it.first == categoryName }
+                val categoryId = if (transactionType == 0) "" else targetCategory?.third.toString()
+                val finalCategoryName = categoryName ?: ""
 
-                // Income, it does not have a category id
-                if (type == "0") {
+                val categoryResult = updateCategoryInternal(
+                    amount = amount.toDouble(),
+                    transactionType = transactionType,
+                    categoryId = categoryId,
+                    categoryName = finalCategoryName
+                )
 
-                    updateCategory(
-                        amount = amount.toDouble(),
-                        transactionType = type.toInt(),
-                        categoryId = "",
-                        categoryName = ""
-                    )
-
+                // Only update state once at the end
+                _state.value = if (categoryResult) {
+                    UpdateBalanceState(success = true)
                 } else {
-                    val targetCategory = categories.find { it.first == categoryName }
-                    // Get selected category id
-                    val id = targetCategory?.third
-
-                    updateCategory(
-                        amount = amount.toDouble(),
-                        transactionType = type.toInt(),
-                        categoryId = id.toString(),
-                        categoryName = categoryName!!
-                    )
+                    UpdateBalanceState(success = false, errorMessage = "Failed to update category.")
                 }
-
-            }
-
-            _state.value = if (result) {
-                UpdateBalanceState(success = true)
             } else {
-                UpdateBalanceState(success = false, errorMessage = "Unable to update balance")
+                _state.value = UpdateBalanceState(success = false, errorMessage = "Unable to update balance.")
             }
         }
     }
 
-    // update/create category with info like the amount, date, and other
-    private fun updateCategory(amount: Double, transactionType: Int, categoryId: String, categoryName: String) {
+    private suspend fun updateCategoryInternal(
+        amount: Double,
+        transactionType: Int,
+        categoryId: String,
+        categoryName: String
+    ): Boolean {
 
-        // Calculate balance after
-        val balanceAfter: Double = if (transactionType == 0){
-            // Income
+        val balanceAfter = if (transactionType == 0) {
             currentBalance + amount
-        }else{
-            // Expense
+        } else {
             currentBalance - amount
         }
 
+        val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return false
 
-        viewModelScope.launch {
-
-            val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
-
-            val result = repo.updateCategory(
-                email = userEmail,
-                amount = amount,
-                transactionType = transactionType,
-                categoryId = categoryId,
-                accountId = "0", // Static needs to be changed
-                balanceBefore = currentBalance,
-                balanceAfter = balanceAfter,
-                 categoryName = categoryName
-            )
-
-            if (result) {
-                println("Category was added or updated")
-            } else {
-                println("Error updating category")
-            }
-        }
+        return repo.updateCategory(
+            email = userEmail,
+            amount = amount,
+            transactionType = transactionType,
+            categoryId = categoryId,
+            accountId = "0", // Static input
+            balanceBefore = currentBalance,
+            balanceAfter = balanceAfter,
+            categoryName = categoryName
+        )
     }
+
+
+    fun resetUpdateState() {
+        _state.value = UpdateBalanceState()
+    }
+
 
 
 }

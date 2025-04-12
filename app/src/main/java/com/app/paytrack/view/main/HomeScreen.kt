@@ -52,10 +52,9 @@ import com.app.paytrack.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-
     date: String,
     viewModel: HomeViewModel
-    ) {
+) {
 
     // State to toggle bottom sheet visibility
     var isBottomSheetVisible by remember { mutableStateOf(false) }
@@ -98,44 +97,33 @@ fun HomeScreen(
     val updateBalanceState = viewModel.updateBalanceState.collectAsState().value
     val context = LocalContext.current
 
-    var balance by remember { mutableStateOf(0.0)}
-    var showBalanceProgress by remember { mutableStateOf(false)}
+    var balance by remember { mutableStateOf(0.0) }
+    var showBalanceProgress by remember { mutableStateOf(true) }
 
 
+    // Update local balance and hide progress when balanceState changes
     LaunchedEffect(balanceState.value) {
-
-        if (balanceState.value > 0.0){
+        if (balance != balanceState.value && balanceState.value >= 0.0) {
             balance = balanceState.value
-            showBalanceProgress = false
-        }else{
             showBalanceProgress = false
         }
     }
 
-    LaunchedEffect(balanceState.value) {
-
-        if (balanceState.value > 0.0){
-            balance = balanceState.value
-            showBalanceProgress = false
-        }else{
-            showBalanceProgress = false
-        }
-    }
-
-    // Handle update error
+    // Show error message if update fails
     LaunchedEffect(updateBalanceState.errorMessage) {
         updateBalanceState.errorMessage?.let { error ->
+            showBalanceProgress = false
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+            viewModel.resetUpdateState()
         }
     }
 
-
-    // Handle update success
+    // Handle update success: fetch balance, then reset update state
     LaunchedEffect(updateBalanceState.success) {
-
-        if (updateBalanceState.success){
+        if (updateBalanceState.success) {
             showBalanceProgress = true
             viewModel.getCurrentBalance()
+            viewModel.resetUpdateState()
         }
     }
 
@@ -157,41 +145,40 @@ fun HomeScreen(
             ) {
                 // Centered Text
 
-               Column (
-                   horizontalAlignment = Alignment.CenterHorizontally,
-               ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
 
-                  Box (
-                      contentAlignment = Alignment.Center,
-                      modifier = Modifier
-                  )
-                  {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                    )
+                    {
 
-                      Text(
-                          modifier = Modifier.fillMaxWidth(),
-                          text = "$$balance",
-                          fontWeight = FontWeight.Bold,
-                          color = colorResource(id = R.color.green),
-                          fontSize = 27.sp,
-                          textAlign = TextAlign.Center
-                      )
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "$$balance",
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(id = R.color.green),
+                            fontSize = 27.sp,
+                            textAlign = TextAlign.Center
+                        )
 
-                      if (showBalanceProgress){
-                          CircularProgressIndicator(
-                              color = colorResource(id = R.color.green)
-                          )
-                      }
+                        if (showBalanceProgress) {
+                            CircularProgressIndicator(
+                                color = colorResource(id = R.color.green)
+                            )
+                        }
+                    }
 
-                  }
-
-                   Text(
-                       modifier = Modifier.padding(top = 10.dp),
-                       text = date,
-                       color = colorResource(id = R.color.dark_green),
-                       fontSize = 16.sp,
-                       textAlign = TextAlign.Center
-                   )
-               }
+                    Text(
+                        modifier = Modifier.padding(top = 10.dp),
+                        text = date,
+                        color = colorResource(id = R.color.dark_green),
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
 
                 // Icons aligned to the end
                 Row(
@@ -283,7 +270,10 @@ fun HomeScreen(
         FloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd) // Align the FAB to the bottom right
-                .padding(bottom = 100.dp, end = 15.dp), // Optional padding to give some space from edges
+                .padding(
+                    bottom = 100.dp,
+                    end = 15.dp
+                ), // Optional padding to give some space from edges
             onClick = {
                 isBottomSheetVisible = true
             },
@@ -296,10 +286,12 @@ fun HomeScreen(
         // Show BottomSheet if isBottomSheetVisible is true
         if (isBottomSheetVisible) {
             BottomSheet(
+
                 showBottomSheet = isBottomSheetVisible,
                 onDismiss = { isBottomSheetVisible = false },
                 onSubmit = { type, amount, category ->
 
+                    showBalanceProgress = true
                     viewModel.updateBalance(amount = amount, type = type, categoryName = category)
 
                     // Remove to update with state
