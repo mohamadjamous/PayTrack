@@ -98,7 +98,7 @@ class UserRepo {
                     .get()
                     .addOnSuccessListener { querySnapshot ->
 
-                        if (!querySnapshot.isEmpty) {
+                        if (querySnapshot != null && !querySnapshot.isEmpty) {
 
                             val userDoc = querySnapshot.documents[0]
                             val documentId = userDoc.id
@@ -183,48 +183,54 @@ class UserRepo {
                     .get()
                     .addOnSuccessListener { querySnapshot ->
 
-                        val userDoc = querySnapshot.documents[0]
+                        if (querySnapshot != null && !querySnapshot.isEmpty) {
+                            val userDoc = querySnapshot.documents[0]
 
-                        // Retrieve the 'accounts' field as a map from the user document
-                        val accounts =
-                            userDoc.get("accounts") as? Map<String, Map<String, Any>> ?: emptyMap()
-                        val targetAccount = accounts[accountId]
+                            // Retrieve the 'accounts' field as a map from the user document
+                            val accounts =
+                                userDoc.get("accounts") as? Map<String, Map<String, Any>>
+                                    ?: emptyMap()
+                            val targetAccount = accounts[accountId]
 
-                        if (targetAccount != null) {
+                            if (targetAccount != null) {
 
-                            val userRef =
-                                fireStore.collection(Collections.Users.value).document(userDoc.id)
+                                val userRef =
+                                    fireStore.collection(Collections.Users.value)
+                                        .document(userDoc.id)
 
-                            // Generate a unique ID for the transaction (same as your data class)
-                            val transactionId = UUID.randomUUID().toString()
+                                // Generate a unique ID for the transaction (same as your data class)
+                                val transactionId = UUID.randomUUID().toString()
 
-                            // Create the transaction map (matching your data class)
-                            val transactionData = mapOf(
-                                "id" to transactionId,
-                                "amount" to amount,
-                                "categoryName" to categoryName, // You may need to pass this in
-                                "categoryId" to categoryId,
-                                "balanceBefore" to balanceBefore,
-                                "balanceAfter" to balanceAfter,
-                                "accountId" to accountId,
-                                "type" to transactionType,
-                                "date" to System.currentTimeMillis()
-                                    .toInt() // Or Date().time.toInt()
-                            )
+                                // Create the transaction map (matching your data class)
+                                val transactionData = mapOf(
+                                    "id" to transactionId,
+                                    "amount" to amount,
+                                    "categoryName" to categoryName, // You may need to pass this in
+                                    "categoryId" to categoryId,
+                                    "balanceBefore" to balanceBefore,
+                                    "balanceAfter" to balanceAfter,
+                                    "accountId" to accountId,
+                                    "type" to transactionType,
+                                    "date" to System.currentTimeMillis()
+                                        .toInt() // Or Date().time.toInt()
+                                )
 
-                            // Define path to this transaction inside the category
-                            val transactionPath = "transactions.$transactionId"
+                                // Define path to this transaction inside the category
+                                val transactionPath = "transactions.$transactionId"
 
-                            // Save the transaction by directly updating the path
-                            userRef.update(transactionPath, transactionData)
-                                .addOnSuccessListener {
-                                    println("Transaction added successfully with ID $transactionId.")
-                                    if (continuation.isActive) continuation.resume(true, null)
-                                }
-                                .addOnFailureListener { e ->
-                                    println("Error adding transaction: ${e.message}")
-                                    if (continuation.isActive) continuation.resume(false, null)
-                                }
+                                // Save the transaction by directly updating the path
+                                userRef.update(transactionPath, transactionData)
+                                    .addOnSuccessListener {
+                                        println("Transaction added successfully with ID $transactionId.")
+                                        if (continuation.isActive) continuation.resume(true, null)
+                                    }
+                                    .addOnFailureListener { e ->
+                                        println("Error adding transaction: ${e.message}")
+                                        if (continuation.isActive) continuation.resume(false, null)
+                                    }
+                            } else {
+                                if (continuation.isActive) continuation.resume(false, null)
+                            }
                         } else {
                             if (continuation.isActive) continuation.resume(false, null)
                         }
@@ -256,20 +262,27 @@ class UserRepo {
                     .get()
                     .addOnSuccessListener { querySnapshot ->
 
-                        val userDoc = querySnapshot.documents[0]
+                        if (querySnapshot != null && !querySnapshot.isEmpty) {
+                            val userDoc = querySnapshot.documents[0]
 
-                        // Retrieve the 'accounts' field as a map from the user document
-                        val accounts =
-                            userDoc.get("accounts") as? Map<String, Map<String, Any>> ?: emptyMap()
-                        val targetAccount = accounts[accountId]
+                            // Retrieve the 'accounts' field as a map from the user document
+                            val accounts =
+                                userDoc.get("accounts") as? Map<String, Map<String, Any>>
+                                    ?: emptyMap()
+                            val targetAccount = accounts[accountId]
 
-                        if (targetAccount != null) {
+                            if (targetAccount != null) {
 
-                            val balance = (targetAccount["balance"] as? Number)?.toDouble() ?: 0.0
-                            println("BalanceValue: $balance")
+                                val balance =
+                                    (targetAccount["balance"] as? Number)?.toDouble() ?: 0.0
+                                println("BalanceValue: $balance")
 
-                            if (continuation.isActive) continuation.resume(balance, null)
+                                if (continuation.isActive) continuation.resume(balance, null)
 
+                            } else {
+                                println("Account with ID not found.")
+                                if (continuation.isActive) continuation.resume(0.0, null)
+                            }
                         } else {
                             println("Account with ID not found.")
                             if (continuation.isActive) continuation.resume(0.0, null)
@@ -290,7 +303,7 @@ class UserRepo {
     }
 
 
-    suspend fun fetchUserAccount(email: String) : ProfileState {
+    suspend fun fetchUserAccount(email: String): ProfileState {
 
         return try {
             suspendCancellableCoroutine { continuation ->
@@ -301,7 +314,7 @@ class UserRepo {
                     .get()
                     .addOnSuccessListener { querySnapshot ->
 
-                        if (!querySnapshot.isEmpty) {
+                        if (querySnapshot != null && !querySnapshot.isEmpty) {
 
                             val userDoc = querySnapshot.documents[0]
 
@@ -317,7 +330,7 @@ class UserRepo {
 
                             if (continuation.isActive) continuation.resume(state, null)
 
-                        }else{
+                        } else {
 
                             val state = ProfileState(
                                 success = false,
@@ -341,8 +354,7 @@ class UserRepo {
 
             }
 
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
             println("ErrorGettingBalance: ${e.message}")
@@ -352,6 +364,58 @@ class UserRepo {
             )
             state
         }
-
     }
+
+
+    suspend fun deleteAccount(email: String): Boolean {
+        val user = FirebaseAuth.getInstance().currentUser ?: return false
+
+        return try {
+            suspendCancellableCoroutine { continuation ->
+                // Step 1: Try to delete from Firebase Auth first
+                user.delete()
+                    .addOnSuccessListener {
+                        // Step 2: After auth deletion, delete Firestore document
+                        FirebaseFirestore.getInstance()
+                            .collection(Collections.Users.value)
+                            .whereEqualTo("email", email)
+                            .limit(1)
+                            .get()
+                            .addOnSuccessListener { snapshot ->
+                                val docId = snapshot.documents.firstOrNull()?.id
+                                if (docId != null) {
+                                    FirebaseFirestore.getInstance().collection(Collections.Users.value).document(docId)
+                                        .delete()
+                                        .addOnSuccessListener {
+                                            println("User document deleted.")
+                                            continuation.resume(true, null)
+                                        }
+                                        .addOnFailureListener { e ->
+                                            println("Auth deleted, but Firestore deletion failed: ${e.message}")
+                                            continuation.resume(false, null)
+                                        }
+                                } else {
+                                    println("No Firestore doc found.")
+                                    continuation.resume(true, null) // Auth deleted, no doc to delete
+                                }
+                            }
+                            .addOnFailureListener {
+                                println("Auth deleted, but Firestore lookup failed: ${it.message}")
+                                continuation.resume(false, null)
+                            }
+                    }
+                    .addOnFailureListener { e ->
+                        println("Failed to delete user from Auth: ${e.message}")
+                        continuation.resume(false, null)
+                    }
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            e.printStackTrace()
+            false
+        }
+    }
+
+
+
 }

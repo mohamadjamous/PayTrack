@@ -1,5 +1,6 @@
 package com.app.paytrack.view.main
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,11 +48,13 @@ import java.util.Locale
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel,
-    onSignOutClick: () -> Unit,
+    onDeleteAccount: () -> Unit,
+    onSignOutClick: () -> Unit
 ) {
 
 
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     var name by remember {
         mutableStateOf("")
@@ -68,6 +72,8 @@ fun ProfileScreen(
         mutableStateOf(false)
     }
 
+    val deleteState by viewModel.deleteState.collectAsState()
+
 
     LaunchedEffect(state.success) {
 
@@ -77,6 +83,19 @@ fun ProfileScreen(
         }
 
         showDialog = false
+    }
+
+    LaunchedEffect(deleteState) {
+
+        if (deleteState == 1) {
+            showDialog = false
+            showDeleteAccountDialog = false
+            onDeleteAccount()
+        }else if (deleteState == 0) {
+            showDialog = false
+            showDeleteAccountDialog = false
+            Toast.makeText(context, "Error, please logout -> login and try again!", Toast.LENGTH_LONG).show()
+        }
     }
 
 
@@ -169,12 +188,14 @@ fun ProfileScreen(
         CustomDialog(show = showDialog)
 
         if (showDeleteAccountDialog) {
+
             SimpleDialog(
                 onConfirm = {
+                    showDialog = true
                     viewModel.deleteAccount()
-//                    showDialog = true
                 },
                 onCancel = {
+                    showDialog = false
                     showDeleteAccountDialog = false
                 }
             )
@@ -188,7 +209,8 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenPreview(modifier: Modifier = Modifier) {
     ProfileScreen(
-        viewModel = ProfileViewModel()
+        viewModel = ProfileViewModel(),
+        onDeleteAccount = {}
     ) {
 
     }

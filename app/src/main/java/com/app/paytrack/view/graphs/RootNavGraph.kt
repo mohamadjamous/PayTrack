@@ -264,7 +264,13 @@ fun RootNavGraph(
                     CreateAccountScreen(
                         viewModel = viewModel,
                         state = state,
-                        navController = navController
+                        onAccountCreate = {
+
+                            isMainScreen = true
+                            navController.navigate(Graph.Main) {
+                                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                            }
+                        }
                     )
 
 
@@ -303,6 +309,14 @@ fun RootNavGraph(
 
                     ProfileScreen(
                         viewModel = viewModel,
+                        onDeleteAccount = {
+
+                            isMainScreen = false
+                            navController.navigate(Graph.Auth) {
+                                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                            }
+
+                        },
                         onSignOutClick = {
 
                             lifecycleScope.launch {

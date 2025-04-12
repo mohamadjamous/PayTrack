@@ -15,6 +15,10 @@ class ProfileViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
     val state = _state.asStateFlow()
+    val repo = UserRepo()
+
+    private val _deleteState = MutableStateFlow(-1)
+    val deleteState = _deleteState.asStateFlow()
 
     init {
         fetchUserInfo()
@@ -39,6 +43,18 @@ class ProfileViewModel : ViewModel() {
     fun deleteAccount() {
 
         viewModelScope.launch {
+
+            // Get user email
+            val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
+
+            if (!repo.deleteAccount(email = userEmail)){
+
+                _deleteState.value = 0
+            }else{
+
+                // Success
+                _deleteState.value = 1
+            }
 
         }
     }

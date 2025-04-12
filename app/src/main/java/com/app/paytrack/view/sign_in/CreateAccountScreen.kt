@@ -42,7 +42,7 @@ fun CreateAccountScreen(
     modifier: Modifier = Modifier,
     viewModel: CreateAccountViewModel,
     state: AccountState,
-    navController: NavController
+    onAccountCreate: () -> Unit
 ) {
 
     var accounts by remember { mutableStateOf(listOf<Account>()) }
@@ -69,9 +69,7 @@ fun CreateAccountScreen(
 
         showDialog = false
         if (state.isCreateAccountSuccess){
-            navController.navigate(Graph.Main) {
-                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
-            }
+           onAccountCreate()
         }
 
         viewModel.resetState()
@@ -160,5 +158,6 @@ fun CreateAccountScreenPreview(modifier: Modifier = Modifier) {
     CreateAccountScreen(
         viewModel = CreateAccountViewModel(),
         state = AccountState(),
-        navController = rememberNavController())
+        onAccountCreate = {}
+    )
 }
