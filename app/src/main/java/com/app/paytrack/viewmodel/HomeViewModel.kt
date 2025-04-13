@@ -2,6 +2,7 @@ package com.app.paytrack.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.paytrack.model.MonthlyExpense
 import com.app.paytrack.model.UpdateBalanceState
 import com.app.paytrack.model.categories
 import com.app.paytrack.model.repo.UserRepo
@@ -24,8 +25,13 @@ class HomeViewModel : ViewModel() {
     private var currentBalance = 0.0
 
 
+    private val _monthlyExpenseState = MutableStateFlow(MonthlyExpense())
+    val monthlyExpenseState = _monthlyExpenseState.asStateFlow()
+
+
     init {
         getCurrentBalance()
+        getMonthlyData()
     }
 
 
@@ -121,6 +127,22 @@ class HomeViewModel : ViewModel() {
         _state.value = UpdateBalanceState()
     }
 
+
+
+    fun getMonthlyData(){
+
+
+        viewModelScope.launch {
+
+            val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
+
+            _monthlyExpenseState.value = repo.getMonthlyExpenseData(email = userEmail)
+        }
+    }
+
+    fun resetMonthlyState() {
+        _monthlyExpenseState.value = MonthlyExpense(success = false)
+    }
 
 
 }

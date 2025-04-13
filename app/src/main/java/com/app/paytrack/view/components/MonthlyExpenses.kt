@@ -47,9 +47,15 @@ fun MonthlyExpenses(
     monthlySpendingData: Map<String, List<Int>>
 ) {
 
-    val currentMonth = LocalDate.now()
-        .month
-        .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+
+    println("DebugValue: $months")
+
+    println("DebugValue: ")
+    monthlySpendingData.forEach { (month, dataList) ->
+        println("$month -> $dataList")
+    }
+
+    val currentMonth = LocalDate.now().month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
 
     var selectedMonth by remember { mutableStateOf(currentMonth) }
 

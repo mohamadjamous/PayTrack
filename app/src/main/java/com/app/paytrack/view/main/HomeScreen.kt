@@ -49,6 +49,7 @@ import com.app.paytrack.view.components.MonthlyExpenses
 import com.app.paytrack.view.components.MostUsedCategories
 import com.app.paytrack.viewmodel.HomeViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -59,15 +60,8 @@ fun HomeScreen(
     // State to toggle bottom sheet visibility
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
+    val monthlyExpenseState by viewModel.monthlyExpenseState.collectAsState()
 
-    val months = listOf(
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    )
-
-    val monthlySpendingData = remember {
-        months.associateWith { List(30) { (0..100).random() } }
-    }
 
     val list = listOf(
         Category(
@@ -100,6 +94,8 @@ fun HomeScreen(
     var balance by remember { mutableStateOf(0.0) }
     var showBalanceProgress by remember { mutableStateOf(true) }
 
+    var showMonthsProgress by remember { mutableStateOf(true) }
+
 
     // Update local balance and hide progress when balanceState changes
     LaunchedEffect(balanceState.value) {
@@ -126,6 +122,19 @@ fun HomeScreen(
             viewModel.resetUpdateState()
         }
     }
+
+
+    // Handle update success: fetch balance, then reset update state
+    LaunchedEffect(monthlyExpenseState.success) {
+
+        if (monthlyExpenseState.success) {
+            showMonthsProgress = false
+        } else {
+            showMonthsProgress = false
+            Toast.makeText(context, "Error Loading Monthly Data", Toast.LENGTH_LONG).show()
+        }
+    }
+
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -219,11 +228,26 @@ fun HomeScreen(
                 color = colorResource(id = R.color.dark_green)
             )
 
-            MonthlyExpenses(
-                modifier = Modifier.padding(top = 15.dp),
-                months = months,
-                monthlySpendingData = monthlySpendingData
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
             )
+            {
+
+                MonthlyExpenses(
+                    modifier = Modifier.padding(top = 15.dp),
+                    months = monthlyExpenseState.months,
+                    monthlySpendingData = monthlyExpenseState.monthlySpendingData
+                )
+
+
+                if (showMonthsProgress) {
+                    CircularProgressIndicator(
+                        color = colorResource(id = R.color.dark_green)
+                    )
+                }
+            }
 
 
             Spacer(modifier = Modifier.height(50.dp))

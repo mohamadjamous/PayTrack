@@ -2,12 +2,14 @@ package com.app.paytrack.model.repo
 
 import com.app.paytrack.model.Account
 import com.app.paytrack.model.Collections
+import com.app.paytrack.model.MonthlyExpense
 import com.app.paytrack.model.ProfileState
 import com.app.paytrack.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.Calendar
 import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
@@ -413,5 +415,118 @@ class UserRepo {
     }
 
 
+
+    // Get Monthly Expenses Data
+
+    /*
+        Example Data
+
+        // Represents all the year months
+         val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+        )
+
+
+        // This should represent how much money was added on that day, so the higher income after deducting all expense the higher the number, reaching to 100 not more than that
+        val monthlySpendingData = remember {
+            months.associateWith { List(30) { (0..100).random() } }
+        }
+
+     */
+    suspend fun getMonthlyExpenseData(email: String): MonthlyExpense {
+        return try {
+            suspendCancellableCoroutine { continuation ->
+
+                fireStore.collection(Collections.Users.value)
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+
+                        val userDoc = querySnapshot.documents.firstOrNull()
+                        if (userDoc == null) {
+                            continuation.resume(emptyMonthlyExpense(), null)
+                            return@addOnSuccessListener
+                        }
+
+                        val transactionsMap = userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
+
+                        val monthList = listOf(
+                            "January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"
+                        )
+
+                        val calendar = Calendar.getInstance()
+
+                        // Map each month name to its daily spending list (30 days)
+                        val monthlyDailyMap = monthList.associateWith { MutableList(30) { 0.0 } }
+
+                        for ((_, value) in transactionsMap) {
+                            val transaction = value as? Map<*, *> ?: continue
+                            val type = (transaction["type"] as? Long)?.toInt() ?: continue
+                            val amount = (transaction["amount"] as? Double) ?: continue
+                            val timestamp = transaction["date"] as? com.google.firebase.Timestamp ?: continue
+
+                            if (type != 1) continue // Only expenses
+
+                            calendar.time = timestamp.toDate()
+                            val monthName = monthList[calendar.get(Calendar.MONTH)]
+                            val dayIndex = (calendar.get(Calendar.DAY_OF_MONTH) - 1).coerceIn(0, 29)
+
+                            monthlyDailyMap[monthName]?.let { it[dayIndex] += amount }
+                        }
+
+                        // Convert to percentage scale
+                        val monthlySpendingData: Map<String, List<Int>> = monthlyDailyMap.mapValues { (_, dailyList) ->
+                            val max = dailyList.maxOrNull()?.takeIf { it > 0 } ?: 1.0
+                            dailyList.map { ((it / max) * 100).toInt().coerceAtMost(100) }
+                        }
+
+                        val totalPerMonth = monthlyDailyMap.values.map { it.sum() }
+                        val avgSpending = totalPerMonth.average()
+                        val positive = totalPerMonth.lastOrNull()?.let { it <= avgSpending } ?: false
+
+                        continuation.resume(
+                            MonthlyExpense(
+                                success = true,
+                                months = monthList,
+                                monthlySpendingData = monthlySpendingData,
+                                monthlyPercentage = avgSpending,
+                                positive = positive
+                            ),
+                            null
+                        )
+                    }
+                    .addOnFailureListener { continuation.resumeWithException(it) }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyMonthlyExpense()
+        }
+    }
+
+
+
+    // Helper function
+    private fun emptyMonthlyExpense(): MonthlyExpense {
+        val months = listOf(
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        )
+        return MonthlyExpense(
+            success = false,
+            months = months,
+            monthlySpendingData = months.associateWith { List(30) { 0 } },
+            monthlyPercentage = 0.0,
+            positive = false
+        )
+    }
+
+
+    // Get Most Used Categories Data
+
+
+    // Get Expense Categories Data
 
 }
