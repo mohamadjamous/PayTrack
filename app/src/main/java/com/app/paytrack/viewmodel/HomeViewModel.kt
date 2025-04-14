@@ -2,12 +2,12 @@ package com.app.paytrack.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.paytrack.model.MonthlyExpense
+import com.app.paytrack.model.MonthData
 import com.app.paytrack.model.UpdateBalanceState
 import com.app.paytrack.model.categories
 import com.app.paytrack.model.repo.UserRepo
+import com.app.paytrack.utlis.Resource
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ class HomeViewModel : ViewModel() {
     private var currentBalance = 0.0
 
 
-    private val _monthlyExpenseState = MutableStateFlow(MonthlyExpense())
+    private val _monthlyExpenseState = MutableStateFlow<Resource<List<MonthData>>>(Resource.Loading())
     val monthlyExpenseState = _monthlyExpenseState.asStateFlow()
 
 
@@ -71,10 +71,14 @@ class HomeViewModel : ViewModel() {
             )
 
             if (result) {
+
                 val transactionType = type.toInt()
                 val targetCategory = categories.find { it.first == categoryName }
                 val categoryId = if (transactionType == 0) "" else targetCategory?.third.toString()
                 val finalCategoryName = categoryName ?: ""
+
+
+
 
                 val categoryResult = updateCategoryInternal(
                     amount = amount.toDouble(),
@@ -131,17 +135,25 @@ class HomeViewModel : ViewModel() {
 
     fun getMonthlyData(){
 
+        _monthlyExpenseState.value = Resource.Loading()
 
         viewModelScope.launch {
 
             val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
 
-            _monthlyExpenseState.value = repo.getMonthlyExpenseData(email = userEmail)
+//            _monthlyExpenseState.value = repo.getMonthlyExpenseData(email = userEmail)
+
+            if (monthlyExpenseState.value.data != null){
+//                println("DebugValue: ${monthlyExpenseState.value.data!!.months}")
+
+            }else{
+                println("DebugValue: Null")
+            }
         }
     }
 
     fun resetMonthlyState() {
-        _monthlyExpenseState.value = MonthlyExpense(success = false)
+        _monthlyExpenseState.value = Resource.Loading()
     }
 
 

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
 import com.app.paytrack.model.Category
+import com.app.paytrack.utlis.Resource
 import com.app.paytrack.view.components.BottomSheet
 import com.app.paytrack.view.components.Categories
 import com.app.paytrack.view.components.MonthlyExpenses
@@ -60,7 +61,8 @@ fun HomeScreen(
     // State to toggle bottom sheet visibility
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
-    val monthlyExpenseState by viewModel.monthlyExpenseState.collectAsState()
+    val monthData by viewModel.monthlyExpenseState.collectAsState()
+
 
 
     val list = listOf(
@@ -94,7 +96,7 @@ fun HomeScreen(
     var balance by remember { mutableStateOf(0.0) }
     var showBalanceProgress by remember { mutableStateOf(true) }
 
-    var showMonthsProgress by remember { mutableStateOf(true) }
+    var showMonthsProgress by remember { mutableStateOf(false) }
 
 
     // Update local balance and hide progress when balanceState changes
@@ -124,14 +126,23 @@ fun HomeScreen(
     }
 
 
-    // Handle update success: fetch balance, then reset update state
-    LaunchedEffect(monthlyExpenseState.success) {
+    // Listen to changes with LaunchedEffect when state changes
+    LaunchedEffect(monthData) {
+        when (monthData) {
 
-        if (monthlyExpenseState.success) {
-            showMonthsProgress = false
-        } else {
-            showMonthsProgress = false
-            Toast.makeText(context, "Error Loading Monthly Data", Toast.LENGTH_LONG).show()
+            is Resource.Loading -> {
+                // Show loading log or trigger something
+                showMonthsProgress = true
+            }
+            is Resource.Error -> {
+                val message = (monthData as Resource.Error).message
+                println("Error: $message")
+                Toast.makeText(context, message ?: "Unknown error", Toast.LENGTH_LONG).show()
+                showMonthsProgress = false
+            }
+            is Resource.Success -> {
+                showMonthsProgress = false
+            }
         }
     }
 
@@ -235,12 +246,11 @@ fun HomeScreen(
             )
             {
 
-                MonthlyExpenses(
-                    modifier = Modifier.padding(top = 15.dp),
-                    months = monthlyExpenseState.months,
-                    monthlySpendingData = monthlyExpenseState.monthlySpendingData
-                )
 
+//                MonthlyExpenses(
+//                    modifier = Modifier.padding(top = 15.dp),
+//                    data = monthData.data
+//                )
 
                 if (showMonthsProgress) {
                     CircularProgressIndicator(

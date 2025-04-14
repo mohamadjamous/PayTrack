@@ -2,14 +2,15 @@ package com.app.paytrack.model.repo
 
 import com.app.paytrack.model.Account
 import com.app.paytrack.model.Collections
-import com.app.paytrack.model.MonthlyExpense
+import com.app.paytrack.model.MonthData
 import com.app.paytrack.model.ProfileState
 import com.app.paytrack.model.User
+import com.app.paytrack.utlis.Resource
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.util.Calendar
+import java.time.Instant
+import java.time.ZoneId
 import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
@@ -192,12 +193,19 @@ class UserRepo {
 
                             if (targetAccount != null) {
 
-                                val userRef =
-                                    fireStore.collection(Collections.Users.value)
-                                        .document(userDoc.id)
+                                val userRef = fireStore.collection(Collections.Users.value)
+                                    .document(userDoc.id)
 
                                 // Generate a unique ID for the transaction (same as your data class)
                                 val transactionId = UUID.randomUUID().toString()
+
+                                println("AmountValue: $amount")
+                                println("TransactionType: $transactionType")
+                                println("CategoryType: $categoryId")
+                                println("FinalCategoryName: $categoryName")
+                                println("BalanceAfter: $balanceAfter")
+                                println("BalanceBefore: $balanceBefore")
+                                println("CurrentDate: ${System.currentTimeMillis().toInt()}")
 
                                 // Create the transaction map (matching your data class)
                                 val transactionData = mapOf(
@@ -209,8 +217,7 @@ class UserRepo {
                                     "balanceAfter" to balanceAfter,
                                     "accountId" to accountId,
                                     "type" to transactionType,
-                                    "date" to System.currentTimeMillis()
-                                        .toInt() // Or Date().time.toInt()
+                                    "date" to System.currentTimeMillis().toInt()
                                 )
 
                                 // Define path to this transaction inside the category
@@ -382,7 +389,8 @@ class UserRepo {
                             .addOnSuccessListener { snapshot ->
                                 val docId = snapshot.documents.firstOrNull()?.id
                                 if (docId != null) {
-                                    FirebaseFirestore.getInstance().collection(Collections.Users.value).document(docId)
+                                    FirebaseFirestore.getInstance()
+                                        .collection(Collections.Users.value).document(docId)
                                         .delete()
                                         .addOnSuccessListener {
                                             println("User document deleted.")
@@ -394,7 +402,10 @@ class UserRepo {
                                         }
                                 } else {
                                     println("No Firestore doc found.")
-                                    continuation.resume(true, null) // Auth deleted, no doc to delete
+                                    continuation.resume(
+                                        true,
+                                        null
+                                    ) // Auth deleted, no doc to delete
                                 }
                             }
                             .addOnFailureListener {
@@ -415,7 +426,6 @@ class UserRepo {
     }
 
 
-
     // Get Monthly Expenses Data
 
     /*
@@ -434,94 +444,97 @@ class UserRepo {
         }
 
      */
-    suspend fun getMonthlyExpenseData(email: String): MonthlyExpense {
-        return try {
-            suspendCancellableCoroutine { continuation ->
-
-                fireStore.collection(Collections.Users.value)
-                    .whereEqualTo("email", email)
-                    .limit(1)
-                    .get()
-                    .addOnSuccessListener { querySnapshot ->
-
-                        val userDoc = querySnapshot.documents.firstOrNull()
-                        if (userDoc == null) {
-                            continuation.resume(emptyMonthlyExpense(), null)
-                            return@addOnSuccessListener
-                        }
-
-                        val transactionsMap = userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
-
-                        val monthList = listOf(
-                            "January", "February", "March", "April", "May", "June",
-                            "July", "August", "September", "October", "November", "December"
-                        )
-
-                        val calendar = Calendar.getInstance()
-
-                        // Map each month name to its daily spending list (30 days)
-                        val monthlyDailyMap = monthList.associateWith { MutableList(30) { 0.0 } }
-
-                        for ((_, value) in transactionsMap) {
-                            val transaction = value as? Map<*, *> ?: continue
-                            val type = (transaction["type"] as? Long)?.toInt() ?: continue
-                            val amount = (transaction["amount"] as? Double) ?: continue
-                            val timestamp = transaction["date"] as? com.google.firebase.Timestamp ?: continue
-
-                            if (type != 1) continue // Only expenses
-
-                            calendar.time = timestamp.toDate()
-                            val monthName = monthList[calendar.get(Calendar.MONTH)]
-                            val dayIndex = (calendar.get(Calendar.DAY_OF_MONTH) - 1).coerceIn(0, 29)
-
-                            monthlyDailyMap[monthName]?.let { it[dayIndex] += amount }
-                        }
-
-                        // Convert to percentage scale
-                        val monthlySpendingData: Map<String, List<Int>> = monthlyDailyMap.mapValues { (_, dailyList) ->
-                            val max = dailyList.maxOrNull()?.takeIf { it > 0 } ?: 1.0
-                            dailyList.map { ((it / max) * 100).toInt().coerceAtMost(100) }
-                        }
-
-                        val totalPerMonth = monthlyDailyMap.values.map { it.sum() }
-                        val avgSpending = totalPerMonth.average()
-                        val positive = totalPerMonth.lastOrNull()?.let { it <= avgSpending } ?: false
-
-                        continuation.resume(
-                            MonthlyExpense(
-                                success = true,
-                                months = monthList,
-                                monthlySpendingData = monthlySpendingData,
-                                monthlyPercentage = avgSpending,
-                                positive = positive
-                            ),
-                            null
-                        )
-                    }
-                    .addOnFailureListener { continuation.resumeWithException(it) }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emptyMonthlyExpense()
-        }
-    }
-
-
-
-    // Helper function
-    private fun emptyMonthlyExpense(): MonthlyExpense {
-        val months = listOf(
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        )
-        return MonthlyExpense(
-            success = false,
-            months = months,
-            monthlySpendingData = months.associateWith { List(30) { 0 } },
-            monthlyPercentage = 0.0,
-            positive = false
-        )
-    }
+//    suspend fun getMonthlyExpenseData(email: String): Resource<List<MonthData>> {
+//        return try {
+//            suspendCancellableCoroutine { continuation ->
+//
+//                fireStore.collection(Collections.Users.value)
+//                    .whereEqualTo("email", email)
+//                    .limit(1)
+//                    .get()
+//                    .addOnSuccessListener { querySnapshot ->
+//
+//                        val userDoc = querySnapshot.documents.firstOrNull()
+//
+//                        if (userDoc == null) {
+//                            continuation.resume(Resource.Error("User not found"), null)
+//                            return@addOnSuccessListener
+//                        }
+//
+//                        val transactionsMap =
+//                            userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
+//
+//                        val months = listOf(
+//                            "January", "February", "March", "April", "May", "June",
+//                            "July", "August", "September", "October", "November", "December"
+//                        )
+//
+//                        val monthlyBalanceMap = months.associateWith { MutableList(30) { 0.0 } }
+//
+//                        for ((_, value) in transactionsMap) {
+//                            val transaction = value as? Map<*, *> ?: continue
+//                            val type = (transaction["type"] as? Long)?.toInt() ?: continue
+//                            val amount = (transaction["amount"] as? Double) ?: continue
+//
+//                            val dateMillis = (transaction["date"] as? Int)?.toLong() ?: continue
+//                            val dateTime =
+//                                Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault())
+//
+//                            val monthIndex = dateTime.monthValue - 1
+//                            val dayIndex = (dateTime.dayOfMonth - 1).coerceIn(0, 29)
+//                            val monthName = months.getOrNull(monthIndex) ?: continue
+//
+//                            when (type) {
+//                                0 -> monthlyBalanceMap[monthName]?.let { it[dayIndex] += amount } // Income
+//                                1 -> monthlyBalanceMap[monthName]?.let { it[dayIndex] -= amount } // Expense
+//                            }
+//                        }
+//
+//                        val monthlyDataList = months.map { month ->
+//
+//                            val balances = monthlyBalanceMap[month] ?: List(30) { 0.0 }
+//                            val max = balances.maxOrNull()?.takeIf { it > 0 } ?: 1.0
+//                            val spendingData = balances.map {
+//                                val percentage = (it / max * 100).coerceIn(0.0, 100.0)
+//                                (percentage / 10).toInt() * 10
+//                            }
+//                            val balance = balances.sum()
+//                            val allBalances = monthlyBalanceMap.values.map { it.sum() }
+//                            val percentage = String.format("%.2f", allBalances).toDouble()
+//
+//                            val percentStr: String = if (percentage > 0) {
+//                                "+${percentage}%"
+//                            } else if (percentage < 0) {
+//                                "-${percentage}%"
+//                            } else {
+//                                "${percentage}%"
+//                            }
+//
+//                            MonthData(
+//                                name = month,
+//                                spendingData = spendingData,
+//                                percentage = percentStr,
+//                                balance = balance
+//                            )
+//                        }
+//
+//                        continuation.resume(
+//                            Resource.Success(
+//                                MonthlyExpense(
+//                                    months = months,
+//                                    monthlyData = monthlyDataList
+//                                )
+//                            ),
+//                            null
+//                        )
+//                    }
+//                    .addOnFailureListener { continuation.resumeWithException(it) }
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            Resource.Error(e.message)
+//        }
+//    }
 
 
     // Get Most Used Categories Data

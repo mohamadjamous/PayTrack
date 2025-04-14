@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun PercentageChangeBox(
     modifier: Modifier = Modifier,
-    percentageText: String = "+921%"
+    percentageText: String
 ) {
     Row(
         modifier = modifier

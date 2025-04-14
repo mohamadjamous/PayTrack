@@ -44,6 +44,10 @@ fun DailySpendingBarChart(
                     .width(20.dp)
                     .fillMaxHeight()
             ) {
+
+                println("DailySpendingBarChartAmount: $amount")
+                println("DailySpendingBarChart: $index")
+
                 Box(
                     modifier = Modifier
                         .height((amount / maxSpending * 80).dp) // max bar height = 80.dp
