@@ -469,54 +469,7 @@ class UserRepo {
 //                            "July", "August", "September", "October", "November", "December"
 //                        )
 //
-//                        val monthlyBalanceMap = months.associateWith { MutableList(30) { 0.0 } }
 //
-//                        for ((_, value) in transactionsMap) {
-//                            val transaction = value as? Map<*, *> ?: continue
-//                            val type = (transaction["type"] as? Long)?.toInt() ?: continue
-//                            val amount = (transaction["amount"] as? Double) ?: continue
-//
-//                            val dateMillis = (transaction["date"] as? Int)?.toLong() ?: continue
-//                            val dateTime =
-//                                Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault())
-//
-//                            val monthIndex = dateTime.monthValue - 1
-//                            val dayIndex = (dateTime.dayOfMonth - 1).coerceIn(0, 29)
-//                            val monthName = months.getOrNull(monthIndex) ?: continue
-//
-//                            when (type) {
-//                                0 -> monthlyBalanceMap[monthName]?.let { it[dayIndex] += amount } // Income
-//                                1 -> monthlyBalanceMap[monthName]?.let { it[dayIndex] -= amount } // Expense
-//                            }
-//                        }
-//
-//                        val monthlyDataList = months.map { month ->
-//
-//                            val balances = monthlyBalanceMap[month] ?: List(30) { 0.0 }
-//                            val max = balances.maxOrNull()?.takeIf { it > 0 } ?: 1.0
-//                            val spendingData = balances.map {
-//                                val percentage = (it / max * 100).coerceIn(0.0, 100.0)
-//                                (percentage / 10).toInt() * 10
-//                            }
-//                            val balance = balances.sum()
-//                            val allBalances = monthlyBalanceMap.values.map { it.sum() }
-//                            val percentage = String.format("%.2f", allBalances).toDouble()
-//
-//                            val percentStr: String = if (percentage > 0) {
-//                                "+${percentage}%"
-//                            } else if (percentage < 0) {
-//                                "-${percentage}%"
-//                            } else {
-//                                "${percentage}%"
-//                            }
-//
-//                            MonthData(
-//                                name = month,
-//                                spendingData = spendingData,
-//                                percentage = percentStr,
-//                                balance = balance
-//                            )
-//                        }
 //
 //                        continuation.resume(
 //                            Resource.Success(
