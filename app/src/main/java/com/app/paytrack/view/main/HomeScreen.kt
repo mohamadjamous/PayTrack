@@ -62,6 +62,7 @@ fun HomeScreen(
     var isBottomSheetVisible by remember { mutableStateOf(false) }
     val monthData by viewModel.monthlyExpenseState.collectAsState()
     val mostUsedCategories by viewModel.mostUsedCategories.collectAsState()
+    val categories by viewModel.categoriesState.collectAsState()
 
 
     val balanceState = viewModel.balanceState.collectAsState()
@@ -73,6 +74,7 @@ fun HomeScreen(
 
     var showMonthsProgress by remember { mutableStateOf(false) }
     var showCategoriesProgress by remember { mutableStateOf(false) }
+    var showCategoriesProgress1 by remember { mutableStateOf(false) }
 
 
     // Update local balance and hide progress when balanceState changes
@@ -136,12 +138,41 @@ fun HomeScreen(
             is Resource.Error -> {
                 val message = (monthData as Resource.Error).message
                 println("Error: $message")
-                Toast.makeText(context, message ?: "Unknown error loading categories", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    message ?: "Unknown error loading categories",
+                    Toast.LENGTH_LONG
+                ).show()
                 showCategoriesProgress = false
             }
 
             is Resource.Success -> {
                 showCategoriesProgress = false
+            }
+        }
+    }
+
+    LaunchedEffect(categories) {
+        when (categories) {
+
+            is Resource.Loading -> {
+                // Show loading log or trigger something
+                showCategoriesProgress1 = true
+            }
+
+            is Resource.Error -> {
+                val message = (monthData as Resource.Error).message
+                println("Error: $message")
+                Toast.makeText(
+                    context,
+                    message ?: "Unknown error loading categories",
+                    Toast.LENGTH_LONG
+                ).show()
+                showCategoriesProgress1 = false
+            }
+
+            is Resource.Success -> {
+                showCategoriesProgress1 = false
             }
         }
     }
@@ -272,11 +303,11 @@ fun HomeScreen(
                 color = colorResource(id = R.color.dark_green)
             )
 
-            if (showCategoriesProgress){
+            if (showCategoriesProgress) {
                 CircularProgressIndicator()
-            }else{
+            } else {
 
-                if (mostUsedCategories.data != null){
+                if (mostUsedCategories.data != null) {
                     MostUsedCategories(
                         modifier = Modifier.padding(top = 15.dp),
                         list = mostUsedCategories.data!!
@@ -294,10 +325,21 @@ fun HomeScreen(
                 color = colorResource(id = R.color.dark_green)
             )
 
-//            Categories(
-//                modifier = Modifier.padding(top = 15.dp),
-//                list = list
-//            )
+
+            if (showCategoriesProgress1) {
+
+                CircularProgressIndicator()
+
+            } else {
+
+                if (categories.data != null) {
+                    Categories(
+                        modifier = Modifier.padding(top = 15.dp, bottom = 35.dp),
+                        list = categories.data!!
+                    )
+                }
+            }
+
 
             Spacer(modifier = Modifier.height(50.dp))
 

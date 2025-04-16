@@ -33,7 +33,7 @@ class HomeViewModel : ViewModel() {
     val mostUsedCategories = _mostUsedCategories.asStateFlow()
 
     private val _categories = MutableStateFlow<Resource<List<Category>>>(Resource.Loading())
-    val categories = _categories.asStateFlow()
+    val categoriesState = _categories.asStateFlow()
 
 
     init {

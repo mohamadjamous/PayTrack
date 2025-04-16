@@ -706,10 +706,10 @@ class UserRepo {
                             .groupBy({ it.first }, { it.second })
                             .mapValues { entry -> entry.value.sum() }
 
-                        val allCategories = categoryUsage.entries.mapNotNull { (name, total) ->
-                            val meta = categoryMeta.find { it.first == name } ?: return@mapNotNull null
+                        val allCategories = categoryMeta.map { (name, iconRes, _) ->
+                            val total = categoryUsage[name] ?: 0.0
                             Category(
-                                iconRes = meta.second,
+                                iconRes = iconRes,
                                 name = name,
                                 value = "$${total.toInt()}"
                             )
@@ -724,5 +724,6 @@ class UserRepo {
             Resource.Error(e.message)
         }
     }
+
 
 }
