@@ -19,7 +19,7 @@ fun MostUsedCategories(
     Column(modifier = modifier) {
         list.take(4).forEach { category ->
             CategoryItem(
-                painter = category.painter,
+                painter = painterResource(id = category.iconRes),
                 name = category.name,
                 value = category.value
             )
@@ -32,27 +32,27 @@ fun MostUsedCategories(
 @Composable
 fun MostUsedCategoriesPreview(modifier: Modifier = Modifier) {
 
-    val list = listOf(
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            "Lorem",
-            value = "7,000€"
-        ),
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            "Lorem",
-            value = "7,000€"
-        ),
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            "Lorem",
-            value = "7,000€"
-        ),
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            "Lorem",
-            value = "7,000€"
-        )
-    )
-    MostUsedCategories(list = list)
+//    val list = listOf(
+//        Category(
+//            painter = painterResource(id = R.drawable.person),
+//            "Lorem",
+//            value = "7,000€"
+//        ),
+//        Category(
+//            painter = painterResource(id = R.drawable.person),
+//            "Lorem",
+//            value = "7,000€"
+//        ),
+//        Category(
+//            painter = painterResource(id = R.drawable.person),
+//            "Lorem",
+//            value = "7,000€"
+//        ),
+//        Category(
+//            painter = painterResource(id = R.drawable.person),
+//            "Lorem",
+//            value = "7,000€"
+//        )
+//    )
+//    MostUsedCategories(list = list)
 }

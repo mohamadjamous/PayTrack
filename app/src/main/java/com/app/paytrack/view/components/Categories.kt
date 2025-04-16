@@ -29,7 +29,7 @@ fun Categories(
 
         list.take(6).forEach {
             CategoryItemMain(
-                painter = it.painter,
+                painter = painterResource(id = it.iconRes),
                 name = it.name,
                 desc = it.desc,
                 value = it.value,
@@ -48,28 +48,28 @@ fun Categories(
 @Composable
 fun CategoriesPreview(modifier: Modifier = Modifier) {
 
-    val list = listOf(
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            name = "Lorem",
-            value = "7,000€",
-            date = "June 7",
-            desc = "Dum & Simple"
-        ),
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            name = "Lorem",
-            value = "7,000€",
-            date = "June 7",
-            desc = "Dum & Simple"
-        ),
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            name = "Lorem",
-            value = "7,000€",
-            date = "June 7",
-            desc = "Dum & Simple"
-        )
-    )
-    Categories(list = list)
+//    val list = listOf(
+//        Category(
+//            painter = painterResource(id = R.drawable.person),
+//            name = "Lorem",
+//            value = "7,000€",
+//            date = "June 7",
+//            desc = "Dum & Simple"
+//        ),
+//        Category(
+//            painter = painterResource(id = R.drawable.person),
+//            name = "Lorem",
+//            value = "7,000€",
+//            date = "June 7",
+//            desc = "Dum & Simple"
+//        ),
+//        Category(
+//            painter = painterResource(id = R.drawable.person),
+//            name = "Lorem",
+//            value = "7,000€",
+//            date = "June 7",
+//            desc = "Dum & Simple"
+//        )
+//    )
+//    Categories(list = list)
 }

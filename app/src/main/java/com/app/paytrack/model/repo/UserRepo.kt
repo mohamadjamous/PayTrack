@@ -1,6 +1,12 @@
 package com.app.paytrack.model.repo
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import com.app.paytrack.R
 import com.app.paytrack.model.Account
+import com.app.paytrack.model.Category
 import com.app.paytrack.model.Collections
 import com.app.paytrack.model.MonthData
 import com.app.paytrack.model.ProfileState
@@ -10,7 +16,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
+import java.util.Calendar
+import java.util.Locale
 import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
@@ -217,7 +226,7 @@ class UserRepo {
                                     "balanceAfter" to balanceAfter,
                                     "accountId" to accountId,
                                     "type" to transactionType,
-                                    "date" to System.currentTimeMillis().toInt()
+                                    "date" to Calendar.getInstance().timeInMillis
                                 )
 
                                 // Define path to this transaction inside the category
@@ -444,55 +453,276 @@ class UserRepo {
         }
 
      */
-//    suspend fun getMonthlyExpenseData(email: String): Resource<List<MonthData>> {
-//        return try {
-//            suspendCancellableCoroutine { continuation ->
-//
-//                fireStore.collection(Collections.Users.value)
-//                    .whereEqualTo("email", email)
-//                    .limit(1)
-//                    .get()
-//                    .addOnSuccessListener { querySnapshot ->
-//
-//                        val userDoc = querySnapshot.documents.firstOrNull()
-//
-//                        if (userDoc == null) {
-//                            continuation.resume(Resource.Error("User not found"), null)
-//                            return@addOnSuccessListener
-//                        }
-//
-//                        val transactionsMap =
-//                            userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
-//
-//                        val months = listOf(
-//                            "January", "February", "March", "April", "May", "June",
-//                            "July", "August", "September", "October", "November", "December"
-//                        )
-//
-//
-//
-//                        continuation.resume(
-//                            Resource.Success(
-//                                MonthlyExpense(
-//                                    months = months,
-//                                    monthlyData = monthlyDataList
-//                                )
-//                            ),
-//                            null
-//                        )
-//                    }
-//                    .addOnFailureListener { continuation.resumeWithException(it) }
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            Resource.Error(e.message)
-//        }
-//    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun getMonthlyExpenseData(email: String): Resource<List<MonthData>> {
+        return try {
+            suspendCancellableCoroutine { continuation ->
+
+                fireStore.collection(Collections.Users.value)
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+
+                        val userDoc = querySnapshot.documents.firstOrNull()
+
+                        if (userDoc == null) {
+                            continuation.resume(Resource.Error("User not found"), null)
+                            return@addOnSuccessListener
+                        }
+
+                        val transactionsMap =
+                            userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
+
+                        val months = listOf(
+                            "January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"
+                        )
+
+                        val monthDataList = mutableListOf<MonthData>()
+
+                        // Step 1: Group transactions by month
+                        val monthlyTransactions =
+                            months.associateWith { mutableListOf<Map<*, *>>() }
+
+                        for ((_, value) in transactionsMap) {
+                            val transaction = value as? Map<*, *> ?: continue
+                            val dateMillis = (transaction["date"] as? Int)?.toLong() ?: continue
+                            val date =
+                                Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                            val monthName = date.month.getDisplayName(
+                                java.time.format.TextStyle.FULL,
+                                Locale.ENGLISH
+                            )
+
+                            monthlyTransactions[monthName]?.add(transaction)
+                        }
+
+                        // Step 2: Process each month
+                        var previousBalance = 0.0
+
+                        months.forEachIndexed { index, month ->
+                            val transactions = monthlyTransactions[month] ?: emptyList()
+
+                            val dailyScores = MutableList(30) { 0 }
+
+                            var balance = 0.0
+
+                            for (txn in transactions) {
+
+                                val amount = (txn["amount"] as? Number)?.toDouble() ?: continue
+                                val type = (txn["type"] as? Number)?.toInt() ?: continue
+                                val dateMillis = (txn["date"] as? Int)?.toLong() ?: continue
+                                val date =
+                                    Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault())
+                                        .toLocalDate()
+
+                                val dayIndex = (date.dayOfMonth - 1).coerceIn(0, 29)
+
+                                // Type: 0 = income (+10), 1 = expense (-10)
+                                when (type) {
+                                    0 -> {
+                                        balance += amount
+                                        dailyScores[dayIndex] += 10
+                                    }
+
+                                    1 -> {
+                                        balance -= amount
+                                        dailyScores[dayIndex] -= 10
+                                    }
+                                }
+                            }
+
+                            // Step 3: Normalize to 0–100 (in 10s)
+                            val normalizedSpendingData = dailyScores.map {
+                                val percentage =
+                                    (it + 100).coerceIn(0, 100) // Ensure no negative values
+                                (percentage / 10) * 10
+                            }
+
+                            // Step 4: Calculate percentage change
+                            val percentageChange = if (index > 0) {
+                                val diff = balance - previousBalance
+                                val percent =
+                                    if (previousBalance != 0.0) (diff / previousBalance * 100) else 0.0
+                                "${if (percent >= 0) "+" else ""}${String.format("%.1f", percent)}%"
+                            } else {
+                                "0%"
+                            }
+
+                            previousBalance = balance
+
+                            monthDataList.add(
+                                MonthData(
+                                    id = index,
+                                    name = month,
+                                    spendingData = normalizedSpendingData,
+                                    percentage = percentageChange,
+                                    balance = balance
+                                )
+                            )
+                        }
+
+                        continuation.resume(Resource.Success(monthDataList), null)
+                    }
+                    .addOnFailureListener { continuation.resumeWithException(it) }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.message)
+        }
+    }
 
 
     // Get Most Used Categories Data
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun getMostUsedCategories(email: String): Resource<List<Category>> {
+        return try {
+            suspendCancellableCoroutine { continuation ->
+                fireStore.collection(Collections.Users.value)
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val userDoc = querySnapshot.documents.firstOrNull()
+
+                        if (userDoc == null) {
+                            continuation.resume(Resource.Error("User not found"), null)
+                            return@addOnSuccessListener
+                        }
+
+                        val transactionsMap =
+                            userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
+
+                        val categoryMeta = listOf(
+                            Triple("Transport", R.drawable.transportation, 0),
+                            Triple("Groceries", R.drawable.cart, 1),
+                            Triple("Health", R.drawable.health, 2),
+                            Triple("Shopping", R.drawable.basket, 3),
+                            Triple("Gifts", R.drawable.gift, 4),
+                            Triple("Entertainment", R.drawable.movie, 5)
+                        )
+
+                        val now = LocalDate.now()
+                        val currentMonth = now.monthValue
+                        val currentYear = now.year
+
+                        val categoryUsage: Map<String, Double> = transactionsMap.values
+                            .mapNotNull { it as? Map<*, *> }
+                            .mapNotNull { transaction ->
+                                val categoryName = transaction["categoryName"] as? String
+                                val amount = (transaction["amount"] as? Number)?.toDouble()
+                                    ?: return@mapNotNull null
+                                val timestamp = (transaction["date"] as? Number)?.toLong()
+                                    ?: return@mapNotNull null
+
+                                val date = Instant.ofEpochMilli(timestamp)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+
+                                // Filter for current month and year
+                                if (date.monthValue == currentMonth && date.year == currentYear && categoryName != null) {
+                                    categoryName to amount
+                                } else {
+                                    null
+                                }
+                            }
+                            .groupBy({ it.first }, { it.second })
+                            .mapValues { entry -> entry.value.sum() }
+
+                        val sortedCategories = categoryUsage.entries
+                            .sortedByDescending { it.value }
+                            .take(4)
+                            .mapNotNull { (name, total) ->
+                                val meta =
+                                    categoryMeta.find { it.first == name } ?: return@mapNotNull null
+                                Category(
+                                    iconRes = meta.second,
+                                    name = name,
+                                    value = "$${total.toInt()}"
+                                )
+                            }
+
+                        continuation.resume(Resource.Success(sortedCategories), null)
+                    }
+                    .addOnFailureListener { continuation.resumeWithException(it) }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.message)
+        }
+    }
 
 
-    // Get Expense Categories Data
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun getCategories(email: String): Resource<List<Category>> {
+        return try {
+            suspendCancellableCoroutine { continuation ->
+                fireStore.collection(Collections.Users.value)
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val userDoc = querySnapshot.documents.firstOrNull()
+
+                        if (userDoc == null) {
+                            continuation.resume(Resource.Error("User not found"), null)
+                            return@addOnSuccessListener
+                        }
+
+                        val transactionsMap = userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
+
+                        val categoryMeta = listOf(
+                            Triple("Transport", R.drawable.transportation, 0),
+                            Triple("Groceries", R.drawable.cart, 1),
+                            Triple("Health", R.drawable.health, 2),
+                            Triple("Shopping", R.drawable.basket, 3),
+                            Triple("Gifts", R.drawable.gift, 4),
+                            Triple("Entertainment", R.drawable.movie, 5)
+                        )
+
+                        val now = LocalDate.now()
+                        val currentMonth = now.monthValue
+                        val currentYear = now.year
+
+                        val categoryUsage: Map<String, Double> = transactionsMap.values
+                            .mapNotNull { it as? Map<*, *> }
+                            .mapNotNull { transaction ->
+                                val categoryName = transaction["categoryName"] as? String
+                                val amount = (transaction["amount"] as? Number)?.toDouble() ?: return@mapNotNull null
+                                val timestamp = (transaction["date"] as? Number)?.toLong() ?: return@mapNotNull null
+
+                                val date = Instant.ofEpochMilli(timestamp)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+
+                                if (date.monthValue == currentMonth && date.year == currentYear && categoryName != null) {
+                                    categoryName to amount
+                                } else {
+                                    null
+                                }
+                            }
+                            .groupBy({ it.first }, { it.second })
+                            .mapValues { entry -> entry.value.sum() }
+
+                        val allCategories = categoryUsage.entries.mapNotNull { (name, total) ->
+                            val meta = categoryMeta.find { it.first == name } ?: return@mapNotNull null
+                            Category(
+                                iconRes = meta.second,
+                                name = name,
+                                value = "$${total.toInt()}"
+                            )
+                        }
+
+                        continuation.resume(Resource.Success(allCategories), null)
+                    }
+                    .addOnFailureListener { continuation.resumeWithException(it) }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.message)
+        }
+    }
 
 }

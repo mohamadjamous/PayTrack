@@ -2,6 +2,7 @@ package com.app.paytrack.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.paytrack.model.Category
 import com.app.paytrack.model.MonthData
 import com.app.paytrack.model.UpdateBalanceState
 import com.app.paytrack.model.categories
@@ -28,10 +29,18 @@ class HomeViewModel : ViewModel() {
     private val _monthlyExpenseState = MutableStateFlow<Resource<List<MonthData>>>(Resource.Loading())
     val monthlyExpenseState = _monthlyExpenseState.asStateFlow()
 
+    private val _mostUsedCategories = MutableStateFlow<Resource<List<Category>>>(Resource.Loading())
+    val mostUsedCategories = _mostUsedCategories.asStateFlow()
+
+    private val _categories = MutableStateFlow<Resource<List<Category>>>(Resource.Loading())
+    val categories = _categories.asStateFlow()
+
 
     init {
         getCurrentBalance()
         getMonthlyData()
+        getMostUsedCategories()
+        getCategories()
     }
 
 
@@ -133,7 +142,7 @@ class HomeViewModel : ViewModel() {
 
 
 
-    fun getMonthlyData(){
+    private fun getMonthlyData(){
 
         _monthlyExpenseState.value = Resource.Loading()
 
@@ -141,14 +150,34 @@ class HomeViewModel : ViewModel() {
 
             val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
 
-//            _monthlyExpenseState.value = repo.getMonthlyExpenseData(email = userEmail)
+            _monthlyExpenseState.value = repo.getMonthlyExpenseData(email = userEmail)
 
-            if (monthlyExpenseState.value.data != null){
-//                println("DebugValue: ${monthlyExpenseState.value.data!!.months}")
+        }
+    }
 
-            }else{
-                println("DebugValue: Null")
-            }
+    private fun getMostUsedCategories(){
+
+        _mostUsedCategories.value = Resource.Loading()
+
+        viewModelScope.launch {
+
+            val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
+
+            _mostUsedCategories.value = repo.getMostUsedCategories(email = userEmail)
+
+        }
+    }
+
+    private fun getCategories(){
+
+        _categories.value = Resource.Loading()
+
+        viewModelScope.launch {
+
+            val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: return@launch
+
+            _categories.value = repo.getCategories(email = userEmail)
+
         }
     }
 

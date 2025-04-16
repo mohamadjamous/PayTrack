@@ -60,34 +60,9 @@ fun HomeScreen(
 
     // State to toggle bottom sheet visibility
     var isBottomSheetVisible by remember { mutableStateOf(false) }
-
     val monthData by viewModel.monthlyExpenseState.collectAsState()
+    val mostUsedCategories by viewModel.mostUsedCategories.collectAsState()
 
-
-
-    val list = listOf(
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            name = "Lorem",
-            value = "7,000€",
-            date = "June 7",
-            desc = "Dum & Simple"
-        ),
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            name = "Lorem",
-            value = "7,000€",
-            date = "June 7",
-            desc = "Dum & Simple"
-        ),
-        Category(
-            painter = painterResource(id = R.drawable.person),
-            name = "Lorem",
-            value = "7,000€",
-            date = "June 7",
-            desc = "Dum & Simple"
-        )
-    )
 
     val balanceState = viewModel.balanceState.collectAsState()
     val updateBalanceState = viewModel.updateBalanceState.collectAsState().value
@@ -97,6 +72,7 @@ fun HomeScreen(
     var showBalanceProgress by remember { mutableStateOf(true) }
 
     var showMonthsProgress by remember { mutableStateOf(false) }
+    var showCategoriesProgress by remember { mutableStateOf(false) }
 
 
     // Update local balance and hide progress when balanceState changes
@@ -134,18 +110,41 @@ fun HomeScreen(
                 // Show loading log or trigger something
                 showMonthsProgress = true
             }
+
             is Resource.Error -> {
                 val message = (monthData as Resource.Error).message
                 println("Error: $message")
                 Toast.makeText(context, message ?: "Unknown error", Toast.LENGTH_LONG).show()
                 showMonthsProgress = false
             }
+
             is Resource.Success -> {
                 showMonthsProgress = false
             }
         }
     }
 
+
+    LaunchedEffect(mostUsedCategories) {
+        when (mostUsedCategories) {
+
+            is Resource.Loading -> {
+                // Show loading log or trigger something
+                showCategoriesProgress = true
+            }
+
+            is Resource.Error -> {
+                val message = (monthData as Resource.Error).message
+                println("Error: $message")
+                Toast.makeText(context, message ?: "Unknown error loading categories", Toast.LENGTH_LONG).show()
+                showCategoriesProgress = false
+            }
+
+            is Resource.Success -> {
+                showCategoriesProgress = false
+            }
+        }
+    }
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -247,15 +246,18 @@ fun HomeScreen(
             {
 
 
-//                MonthlyExpenses(
-//                    modifier = Modifier.padding(top = 15.dp),
-//                    data = monthData.data
-//                )
-
                 if (showMonthsProgress) {
                     CircularProgressIndicator(
                         color = colorResource(id = R.color.dark_green)
                     )
+                } else {
+
+                    if (monthData.data != null) {
+                        MonthlyExpenses(
+                            modifier = Modifier.padding(top = 15.dp),
+                            months = monthData.data!!
+                        )
+                    }
                 }
             }
 
@@ -270,10 +272,17 @@ fun HomeScreen(
                 color = colorResource(id = R.color.dark_green)
             )
 
-            MostUsedCategories(
-                modifier = Modifier.padding(top = 15.dp),
-                list = list
-            )
+            if (showCategoriesProgress){
+                CircularProgressIndicator()
+            }else{
+
+                if (mostUsedCategories.data != null){
+                    MostUsedCategories(
+                        modifier = Modifier.padding(top = 15.dp),
+                        list = mostUsedCategories.data!!
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(50.dp))
 
@@ -285,10 +294,10 @@ fun HomeScreen(
                 color = colorResource(id = R.color.dark_green)
             )
 
-            Categories(
-                modifier = Modifier.padding(top = 15.dp),
-                list = list
-            )
+//            Categories(
+//                modifier = Modifier.padding(top = 15.dp),
+//                list = list
+//            )
 
             Spacer(modifier = Modifier.height(50.dp))
 

@@ -1,9 +1,7 @@
 package com.app.paytrack.model
 
-import androidx.compose.ui.graphics.painter.Painter
-
 data class Category(
-    val painter: Painter,
+    val iconRes: Int,
     val name: String,
     val desc: String = "",
     val date: String = "",

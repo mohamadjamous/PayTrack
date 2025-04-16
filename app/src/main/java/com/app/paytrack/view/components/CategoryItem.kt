@@ -83,7 +83,7 @@ fun CategoryItem(
 
 
             Text(
-                text = value.toString(),
+                text = value,
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
