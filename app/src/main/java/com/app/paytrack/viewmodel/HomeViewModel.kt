@@ -185,5 +185,9 @@ class HomeViewModel : ViewModel() {
         _monthlyExpenseState.value = Resource.Loading()
     }
 
+    fun resetBalanceState() {
+        _stateBalance.value = 0.0
+    }
+
 
 }

@@ -34,7 +34,7 @@ fun CategoryItemMain(
     desc: String,
     value: String,
     date: String,
-    circleColor: Color = Color.Red
+    circleColor: Color = colorResource(id = R.color.dark_green)
 ) {
 
     Row(

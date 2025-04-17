@@ -80,10 +80,9 @@ fun HomeScreen(
 
     // Update local balance and hide progress when balanceState changes
     LaunchedEffect(balanceState.value) {
-        if (balance != balanceState.value && balanceState.value >= 0.0) {
-            balance = balanceState.value
-            showBalanceProgress = false
-        }
+        balance = balanceState.value
+        showBalanceProgress = false
+//        viewModel.resetBalanceState()
     }
 
     // Show error message if update fails
@@ -405,7 +404,7 @@ fun HomeScreen(
 
                 if (categories.data != null) {
                     Categories(
-                        modifier = Modifier.padding(top = 15.dp, bottom = 35.dp),
+                        modifier = Modifier.padding(top = 15.dp, bottom = 75.dp),
                         list = categories.data!!
                     )
                 }
