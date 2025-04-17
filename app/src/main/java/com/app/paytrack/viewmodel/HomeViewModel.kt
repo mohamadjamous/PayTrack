@@ -87,8 +87,6 @@ class HomeViewModel : ViewModel() {
                 val finalCategoryName = categoryName ?: ""
 
 
-
-
                 val categoryResult = updateCategoryInternal(
                     amount = amount.toDouble(),
                     transactionType = transactionType,
@@ -102,6 +100,10 @@ class HomeViewModel : ViewModel() {
                 } else {
                     UpdateBalanceState(success = false, errorMessage = "Failed to update category.")
                 }
+
+                getMonthlyData()
+                getMostUsedCategories()
+                getCategories()
             } else {
                 _state.value = UpdateBalanceState(success = false, errorMessage = "Unable to update balance.")
             }

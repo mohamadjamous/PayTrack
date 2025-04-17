@@ -18,6 +18,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
@@ -631,6 +632,10 @@ class UserRepo {
                             .groupBy({ it.first }, { it.second })
                             .mapValues { entry -> entry.value.sum() }
 
+                        val currentDate = LocalDate.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMMM d")
+                        val formattedDate = currentDate.format(formatter)
+
                         val sortedCategories = categoryUsage.entries
                             .sortedByDescending { it.value }
                             .take(4)
@@ -640,7 +645,8 @@ class UserRepo {
                                 Category(
                                     iconRes = meta.second,
                                     name = name,
-                                    value = "$${total.toInt()}"
+                                    value = "$${total.toInt()}",
+                                    date = formattedDate
                                 )
                             }
 
@@ -671,7 +677,8 @@ class UserRepo {
                             return@addOnSuccessListener
                         }
 
-                        val transactionsMap = userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
+                        val transactionsMap =
+                            userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
 
                         val categoryMeta = listOf(
                             Triple("Transport", R.drawable.transportation, 0),
@@ -690,8 +697,10 @@ class UserRepo {
                             .mapNotNull { it as? Map<*, *> }
                             .mapNotNull { transaction ->
                                 val categoryName = transaction["categoryName"] as? String
-                                val amount = (transaction["amount"] as? Number)?.toDouble() ?: return@mapNotNull null
-                                val timestamp = (transaction["date"] as? Number)?.toLong() ?: return@mapNotNull null
+                                val amount = (transaction["amount"] as? Number)?.toDouble()
+                                    ?: return@mapNotNull null
+                                val timestamp = (transaction["date"] as? Number)?.toLong()
+                                    ?: return@mapNotNull null
 
                                 val date = Instant.ofEpochMilli(timestamp)
                                     .atZone(ZoneId.systemDefault())
@@ -706,14 +715,21 @@ class UserRepo {
                             .groupBy({ it.first }, { it.second })
                             .mapValues { entry -> entry.value.sum() }
 
-                        val allCategories = categoryMeta.map { (name, iconRes, _) ->
-                            val total = categoryUsage[name] ?: 0.0
-                            Category(
-                                iconRes = iconRes,
-                                name = name,
-                                value = "$${total.toInt()}"
-                            )
-                        }
+
+                            val currentDate = LocalDate.now()
+                            val formatter = DateTimeFormatter.ofPattern("MMMM d")
+                            val formattedDate = currentDate.format(formatter)
+
+                            val allCategories = categoryMeta.map { (name, iconRes, _) ->
+                                val total = categoryUsage[name] ?: 0.0
+                                Category(
+                                    iconRes = iconRes,
+                                    name = name,
+                                    value = "$${total.toInt()}",
+                                    date = formattedDate // e.g., "April 17"
+                                )
+                            }
+
 
                         continuation.resume(Resource.Success(allCategories), null)
                     }

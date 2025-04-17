@@ -80,10 +80,10 @@ fun CategoryItemMain(
                     fontSize = 18.sp
                 )
 
-                Text(
-                    text = desc,
-                    color = Color.White
-                )
+//                Text(
+//                    text = desc,
+//                    color = Color.White
+//                )
             }
 
 
@@ -100,9 +100,10 @@ fun CategoryItemMain(
                 fontSize = 20.sp
             )
 
-            Text(
+            Text(modifier = Modifier.padding(top = 2.dp),
                 text = date,
-                color = Color.White
+                color = Color.White,
+                fontSize = 15.sp
             )
         }
 

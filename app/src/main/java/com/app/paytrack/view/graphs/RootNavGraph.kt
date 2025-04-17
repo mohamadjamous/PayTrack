@@ -10,6 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
@@ -287,7 +289,10 @@ fun RootNavGraph(
                 )
 
 
-                composable<Screen.Home> {
+                composable<Screen.Home>(
+                    enterTransition = { fadeIn(animationSpec = tween(durationMillis = 150)) },
+                    exitTransition = { fadeOut(animationSpec = tween(durationMillis = 150)) }
+                ) {
 
                     // init view model
                     val viewModel = viewModel<HomeViewModel>()
@@ -298,11 +303,17 @@ fun RootNavGraph(
                     )
                 }
 
-                composable<Screen.Charts> {
+                composable<Screen.Charts>(
+                    enterTransition = { fadeIn(animationSpec = tween(durationMillis = 150)) },
+                    exitTransition = { fadeOut(animationSpec = tween(durationMillis = 150)) }
+                ) {
                    ChartsScreen()
                 }
 
-                composable<Screen.Profile> {
+                composable<Screen.Profile>(
+                    enterTransition = { fadeIn(animationSpec = tween(durationMillis = 150)) },
+                    exitTransition = { fadeOut(animationSpec = tween(durationMillis = 150)) }
+                ) {
 
                     // init view model
                     val viewModel = viewModel<ProfileViewModel>()
