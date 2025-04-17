@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -185,7 +186,13 @@ fun ProfileScreen(
             )
         }
 
-        CustomDialog(show = showDialog)
+//        CustomDialog(show = showDialog)
+
+        if (showDialog){
+            CircularProgressIndicator(
+                color = colorResource(id = R.color.green)
+            )
+        }
 
         if (showDeleteAccountDialog) {
 

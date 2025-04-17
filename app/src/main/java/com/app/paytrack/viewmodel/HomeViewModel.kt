@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.paytrack.model.Category
 import com.app.paytrack.model.MonthData
 import com.app.paytrack.model.UpdateBalanceState
-import com.app.paytrack.model.categories
+import com.app.paytrack.utlis.categories
 import com.app.paytrack.model.repo.UserRepo
 import com.app.paytrack.utlis.Resource
 import com.google.firebase.auth.FirebaseAuth

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
 import com.app.paytrack.model.Category
+import com.app.paytrack.model.ShimmerCategoryItem
 import com.app.paytrack.utlis.Resource
 import com.app.paytrack.view.components.BottomSheet
 import com.app.paytrack.view.components.Categories
@@ -261,39 +262,43 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(50.dp))
 
-            // Daily expenses chart
-            Text(
-                text = stringResource(id = R.string.monthly_expenses),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = colorResource(id = R.color.dark_green)
-            )
+///////////////////////// To Be Reviewed Later //////////////////////
 
+//            // Daily expenses chart
+//            Text(
+//                text = stringResource(id = R.string.monthly_expenses),
+//                fontSize = 16.sp,
+//                fontWeight = FontWeight.SemiBold,
+//                color = colorResource(id = R.color.dark_green)
+//            )
+//
+//
+//            Box(
+//                contentAlignment = Alignment.Center,
+//                modifier = Modifier
+//            )
+//            {
+//
+//
+//                if (showMonthsProgress) {
+//                    CircularProgressIndicator(
+//                        color = colorResource(id = R.color.dark_green)
+//                    )
+//                } else {
+//
+//                    if (monthData.data != null) {
+//                        MonthlyExpenses(
+//                            modifier = Modifier.padding(top = 15.dp),
+//                            months = monthData.data!!
+//                        )
+//                    }
+//                }
+//            }
+//
+//
+//            Spacer(modifier = Modifier.height(50.dp))
 
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-            )
-            {
-
-
-                if (showMonthsProgress) {
-                    CircularProgressIndicator(
-                        color = colorResource(id = R.color.dark_green)
-                    )
-                } else {
-
-                    if (monthData.data != null) {
-                        MonthlyExpenses(
-                            modifier = Modifier.padding(top = 15.dp),
-                            months = monthData.data!!
-                        )
-                    }
-                }
-            }
-
-
-            Spacer(modifier = Modifier.height(50.dp))
+///////////////////////// To Be Reviewed Later //////////////////////
 
             // Most used categories
             Text(
@@ -303,8 +308,39 @@ fun HomeScreen(
                 color = colorResource(id = R.color.dark_green)
             )
 
+
+
+
             if (showCategoriesProgress) {
-                CircularProgressIndicator()
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp),
+                    loading = showCategoriesProgress
+                ) {
+
+                }
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp),
+                    loading = showCategoriesProgress
+                ) {
+
+                }
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp),
+                    loading = showCategoriesProgress
+                ) {
+
+                }
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp),
+                    loading = showCategoriesProgress
+                ) {
+
+                }
+
             } else {
 
                 if (mostUsedCategories.data != null) {
@@ -328,7 +364,42 @@ fun HomeScreen(
 
             if (showCategoriesProgress1) {
 
-                CircularProgressIndicator()
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp),
+                    loading = showCategoriesProgress1
+                ) {
+
+                }
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp), loading = showCategoriesProgress1
+                ) {
+
+                }
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp), loading = showCategoriesProgress1
+                ) {
+
+                }
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp), loading = showCategoriesProgress1
+                ) {
+
+                }
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp), loading = showCategoriesProgress1
+                ) {
+
+                }
+
+                ShimmerCategoryItem(
+                    modifier = Modifier.padding(10.dp), loading = showCategoriesProgress1
+                ) {
+
+                }
 
             } else {
 
@@ -339,7 +410,6 @@ fun HomeScreen(
                     )
                 }
             }
-
 
             Spacer(modifier = Modifier.height(50.dp))
 
