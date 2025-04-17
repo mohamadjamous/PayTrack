@@ -69,6 +69,10 @@ fun ProfileScreen(
         mutableStateOf(true)
     }
 
+    var showCustomDialog by remember {
+        mutableStateOf(false)
+    }
+
     var showDeleteAccountDialog by remember {
         mutableStateOf(false)
     }
@@ -186,25 +190,27 @@ fun ProfileScreen(
             )
         }
 
-//        CustomDialog(show = showDialog)
 
-        if (showDialog){
-            CircularProgressIndicator(
-                color = colorResource(id = R.color.green)
-            )
-        }
+        CustomDialog(show = showCustomDialog)
 
         if (showDeleteAccountDialog) {
 
             SimpleDialog(
                 onConfirm = {
-                    showDialog = true
+                    showCustomDialog = true
                     viewModel.deleteAccount()
                 },
                 onCancel = {
-                    showDialog = false
+                    showCustomDialog = false
                     showDeleteAccountDialog = false
+                    showDialog = false
                 }
+            )
+        }
+
+        if (showDialog){
+            CircularProgressIndicator(
+                color = colorResource(id = R.color.green)
             )
         }
     }

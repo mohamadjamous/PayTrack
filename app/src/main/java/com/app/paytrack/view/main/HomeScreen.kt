@@ -259,7 +259,6 @@ fun HomeScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(50.dp))
 
 ///////////////////////// To Be Reviewed Later //////////////////////
 
@@ -299,15 +298,18 @@ fun HomeScreen(
 
 ///////////////////////// To Be Reviewed Later //////////////////////
 
-            // Most used categories
-            Text(
-                text = stringResource(id = R.string.most_used_categories),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = colorResource(id = R.color.dark_green)
-            )
 
+            if (mostUsedCategories.data != null && mostUsedCategories.data!!.isNotEmpty()) {
 
+                // Most used categories
+                Text(
+                    text = stringResource(id = R.string.most_used_categories),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colorResource(id = R.color.dark_green)
+                )
+
+            }
 
 
             if (showCategoriesProgress) {
@@ -342,15 +344,17 @@ fun HomeScreen(
 
             } else {
 
-                if (mostUsedCategories.data != null) {
+                if (mostUsedCategories.data != null && mostUsedCategories.data!!.isNotEmpty()) {
                     MostUsedCategories(
                         modifier = Modifier.padding(top = 15.dp),
                         list = mostUsedCategories.data!!
                     )
+
+                    Spacer(modifier = Modifier.height(50.dp))
                 }
             }
 
-            Spacer(modifier = Modifier.height(50.dp))
+
 
             // Expenses categories
             Text(
