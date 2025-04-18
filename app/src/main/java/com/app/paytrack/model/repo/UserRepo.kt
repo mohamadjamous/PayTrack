@@ -773,8 +773,6 @@ class UserRepo {
 
                         for ((_, transaction) in transactionsMap) {
                             val trans = transaction as? Map<*, *> ?: continue
-
-
                             
                             val timestamp = (trans["date"] as? Number)?.toLong() ?: continue
 
