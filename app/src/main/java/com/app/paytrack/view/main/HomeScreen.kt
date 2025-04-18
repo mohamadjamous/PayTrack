@@ -41,7 +41,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.paytrack.R
+import com.app.paytrack.model.Screen
 import com.app.paytrack.view.components.ShimmerCategoryItem
 import com.app.paytrack.utlis.Resource
 import com.app.paytrack.view.components.BottomSheet
@@ -54,7 +57,8 @@ import com.app.paytrack.viewmodel.HomeViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     date: String,
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    onSettingsClick : () -> Unit
 ) {
 
     // State to toggle bottom sheet visibility
@@ -245,7 +249,9 @@ fun HomeScreen(
                     }
 
                     IconButton(
-                        onClick = { /* your logic */ }
+                        onClick = {
+                            onSettingsClick()
+                        }
                     ) {
                         Icon(
                             modifier = Modifier.size(30.dp),
@@ -434,6 +440,7 @@ fun HomeScreen(
 fun HomeScreenPreview(modifier: Modifier = Modifier) {
     HomeScreen(
         date = "Sun, June 5",
-        viewModel = HomeViewModel()
+        viewModel = HomeViewModel(),
+        onSettingsClick = {}
     )
 }

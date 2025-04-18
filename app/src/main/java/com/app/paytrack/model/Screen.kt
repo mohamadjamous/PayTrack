@@ -34,5 +34,8 @@ sealed class Screen(val route: String) {
     @Serializable
     object Charts
 
+    @Serializable
+    object Settings
+
 
 }

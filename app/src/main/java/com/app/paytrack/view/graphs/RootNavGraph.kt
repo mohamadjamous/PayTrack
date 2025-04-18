@@ -45,6 +45,7 @@ import com.app.paytrack.view.main.ChartsScreen
 import com.app.paytrack.view.main.HomeScreen
 import com.app.paytrack.view.main.ProfileScreen
 import com.app.paytrack.view.screens.ForgotPasswordScreen
+import com.app.paytrack.view.screens.SettingsScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.CreateAccountScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
@@ -52,6 +53,7 @@ import com.app.paytrack.viewmodel.ChartsViewModel
 import com.app.paytrack.viewmodel.CreateAccountViewModel
 import com.app.paytrack.viewmodel.HomeViewModel
 import com.app.paytrack.viewmodel.ProfileViewModel
+import com.app.paytrack.viewmodel.SettingsViewModel
 import com.app.paytrack.viewmodel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
@@ -188,7 +190,7 @@ fun RootNavGraph(
                         onRegister = {
                             isMainScreen = true
                             Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
-                            navController.navigate(Graph.Main){
+                            navController.navigate(Graph.Main) {
                                 popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
                             }
                         },
@@ -301,7 +303,11 @@ fun RootNavGraph(
 
                     HomeScreen(
                         date = date,
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        onSettingsClick = {
+//                            isMainScreen = true
+                            navController.navigate(Screen.Settings)
+                        }
                     )
                 }
 
@@ -348,14 +354,35 @@ fun RootNavGraph(
                                 isMainScreen = false
 
                                 navController.navigate(Graph.Auth) {
-                                    popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                                    popUpTo(Graph.Auth) {
+                                        inclusive = true
+                                    } // Prevent back navigation
                                 }
                             }
                         },
                     )
                 }
 
+                composable<Screen.Settings>(
+                    enterTransition = { fadeIn(animationSpec = tween(durationMillis = 150)) },
+                    exitTransition = { fadeOut(animationSpec = tween(durationMillis = 150)) }
+                ) {
+
+                    // init view model
+                    val viewModel = viewModel<SettingsViewModel>()
+
+                    SettingsScreen(
+                        onBackClick = {
+//                        isMainScreen = false
+                            navController.popBackStack()
+                        },
+                        viewModel = viewModel
+                    )
+                }
+
             }
+
+
 
         }
     }
