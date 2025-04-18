@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.PayTrack" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Base application theme -->
+    <style name="Theme.PayTrack" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorPrimaryVariant">@color/dark_green</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/cyan</item>
+        <item name="colorSecondaryVariant">@color/dark_green_1</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Background and surface -->
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+
+        <!-- Customize status bar, action bar, etc. -->
+        <item name="android:statusBarColor">@color/dark_green</item>
+        <item name="android:navigationBarColor">@color/dark_green</item>
+
+        <!-- Use Material3 typography or your own -->
+        <!-- You can define fonts or text appearances here if needed -->
+    </style>
+
 </resources>

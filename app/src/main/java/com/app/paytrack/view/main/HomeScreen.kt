@@ -58,7 +58,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     date: String,
     viewModel: HomeViewModel,
-    onSettingsClick : () -> Unit
+    onSettingsClick : () -> Unit,
 ) {
 
     // State to toggle bottom sheet visibility

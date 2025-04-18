@@ -66,7 +66,8 @@ import java.util.Locale
 fun RootNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    googleAuthUiClient: GoogleAuthUiClient
+    googleAuthUiClient: GoogleAuthUiClient,
+    onToggleTheme : () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -376,7 +377,10 @@ fun RootNavGraph(
 //                        isMainScreen = false
                             navController.popBackStack()
                         },
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        onToggleTheme = {
+                            onToggleTheme()
+                        }
                     )
                 }
 

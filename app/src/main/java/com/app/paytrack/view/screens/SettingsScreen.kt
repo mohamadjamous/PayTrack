@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,10 +49,17 @@ import com.app.paytrack.viewmodel.SettingsViewModel
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
-    viewModel: SettingsViewModel
+    viewModel: SettingsViewModel,
+    onToggleTheme: () -> Unit,
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
     var darkModeEnabled by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val versionName = try {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName
+    } catch (e: Exception) {
+        "Unknown"
+    }
 
     Column(
         modifier = modifier
@@ -91,6 +99,7 @@ fun SettingsScreen(
             title = "Share App"
         ) {
             // Implement share logic
+            viewModel.shareApp(context = context)
         }
 
         // Dark mode toggle
@@ -98,7 +107,10 @@ fun SettingsScreen(
             icon = Icons.Outlined.Info,
             title = "Dark Mode",
             isChecked = darkModeEnabled,
-            onToggle = { darkModeEnabled = it }
+            onToggle = {
+                darkModeEnabled = it
+                onToggleTheme()
+            }
         )
 
         SettingItem(
@@ -106,13 +118,14 @@ fun SettingsScreen(
             title = "Privacy Policy"
         ) {
             // Navigate to Privacy Policy
+            viewModel.openPrivacyPolicy(context = context)
         }
 
         SettingItem(
             icon = Icons.Outlined.Info,
-            title = "About App"
+            title = "App Version $versionName"
         ) {
-            // Navigate or show dialog
+
         }
     }
 }
@@ -198,6 +211,7 @@ fun SettingToggleItem(
 fun SettingsScreenPreview(modifier: Modifier = Modifier) {
     SettingsScreen(
         onBackClick = {},
-        viewModel = SettingsViewModel()
+        viewModel = SettingsViewModel(),
+        onToggleTheme = {}
     )
 }
