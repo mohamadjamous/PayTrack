@@ -48,6 +48,7 @@ import com.app.paytrack.view.screens.ForgotPasswordScreen
 import com.app.paytrack.view.screens.SignUpScreen
 import com.app.paytrack.view.sign_in.CreateAccountScreen
 import com.app.paytrack.view.sign_in.GoogleAuthUiClient
+import com.app.paytrack.viewmodel.ChartsViewModel
 import com.app.paytrack.viewmodel.CreateAccountViewModel
 import com.app.paytrack.viewmodel.HomeViewModel
 import com.app.paytrack.viewmodel.ProfileViewModel
@@ -109,6 +110,7 @@ fun RootNavGraph(
             }
         }
     ) { innerPadding ->
+
         // NavHost with conditional start destination based on `isMainScreen`
 
         NavHost(
@@ -307,7 +309,13 @@ fun RootNavGraph(
                     enterTransition = { fadeIn(animationSpec = tween(durationMillis = 150)) },
                     exitTransition = { fadeOut(animationSpec = tween(durationMillis = 150)) }
                 ) {
-                   ChartsScreen()
+
+                    // init view model
+                    val viewModel = viewModel<ChartsViewModel>()
+
+                    ChartsScreen(
+                        viewModel = viewModel
+                    )
                 }
 
                 composable<Screen.Profile>(

@@ -2,7 +2,6 @@ package com.app.paytrack.view.main
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -17,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.app.paytrack.R
-import com.app.paytrack.model.navigationItems
+import com.app.paytrack.view.components.navigationItems
 
 @Composable
 fun BottomNavigationBar(

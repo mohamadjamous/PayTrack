@@ -1,4 +1,4 @@
-package com.app.paytrack.model
+package com.app.paytrack.view.components
 
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable

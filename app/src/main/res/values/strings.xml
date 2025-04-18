@@ -43,4 +43,7 @@
     <string name="delete_account">Delete Account</string>
     <string name="delete_account_desc">Delete your account to permanently remove your data and all associated information from our system. This action cannot be undone.</string>
     <string name="confirm">Confirm</string>
+    <string name="income">Income</string>
+    <string name="expense">Expense</string>
+    <string name="charts">Charts</string>
 </resources>

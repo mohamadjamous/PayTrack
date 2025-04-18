@@ -42,12 +42,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
-import com.app.paytrack.model.Category
-import com.app.paytrack.model.ShimmerCategoryItem
+import com.app.paytrack.view.components.ShimmerCategoryItem
 import com.app.paytrack.utlis.Resource
 import com.app.paytrack.view.components.BottomSheet
 import com.app.paytrack.view.components.Categories
-import com.app.paytrack.view.components.MonthlyExpenses
 import com.app.paytrack.view.components.MostUsedCategories
 import com.app.paytrack.viewmodel.HomeViewModel
 
@@ -259,44 +257,8 @@ fun HomeScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
 
-///////////////////////// To Be Reviewed Later //////////////////////
-
-//            // Daily expenses chart
-//            Text(
-//                text = stringResource(id = R.string.monthly_expenses),
-//                fontSize = 16.sp,
-//                fontWeight = FontWeight.SemiBold,
-//                color = colorResource(id = R.color.dark_green)
-//            )
-//
-//
-//            Box(
-//                contentAlignment = Alignment.Center,
-//                modifier = Modifier
-//            )
-//            {
-//
-//
-//                if (showMonthsProgress) {
-//                    CircularProgressIndicator(
-//                        color = colorResource(id = R.color.dark_green)
-//                    )
-//                } else {
-//
-//                    if (monthData.data != null) {
-//                        MonthlyExpenses(
-//                            modifier = Modifier.padding(top = 15.dp),
-//                            months = monthData.data!!
-//                        )
-//                    }
-//                }
-//            }
-//
-//
-//            Spacer(modifier = Modifier.height(50.dp))
-
-///////////////////////// To Be Reviewed Later //////////////////////
 
 
             if (mostUsedCategories.data != null && mostUsedCategories.data!!.isNotEmpty()) {

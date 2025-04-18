@@ -7,11 +7,14 @@ import androidx.compose.ui.text.TextStyle
 import com.app.paytrack.R
 import com.app.paytrack.model.Account
 import com.app.paytrack.model.Category
+import com.app.paytrack.model.CategoryData
+import com.app.paytrack.model.ChartsData
 import com.app.paytrack.model.Collections
 import com.app.paytrack.model.MonthData
 import com.app.paytrack.model.ProfileState
 import com.app.paytrack.model.User
 import com.app.paytrack.utlis.Resource
+import com.app.paytrack.utlis.categories
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -716,19 +719,19 @@ class UserRepo {
                             .mapValues { entry -> entry.value.sum() }
 
 
-                            val currentDate = LocalDate.now()
-                            val formatter = DateTimeFormatter.ofPattern("MMMM d")
-                            val formattedDate = currentDate.format(formatter)
+                        val currentDate = LocalDate.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMMM d")
+                        val formattedDate = currentDate.format(formatter)
 
-                            val allCategories = categoryMeta.map { (name, iconRes, _) ->
-                                val total = categoryUsage[name] ?: 0.0
-                                Category(
-                                    iconRes = iconRes,
-                                    name = name,
-                                    value = "$${total.toInt()}",
-                                    date = formattedDate // e.g., "April 17"
-                                )
-                            }
+                        val allCategories = categoryMeta.map { (name, iconRes, _) ->
+                            val total = categoryUsage[name] ?: 0.0
+                            Category(
+                                iconRes = iconRes,
+                                name = name,
+                                value = "$${total.toInt()}",
+                                date = formattedDate // e.g., "April 17"
+                            )
+                        }
 
 
                         continuation.resume(Resource.Success(allCategories), null)
@@ -740,6 +743,74 @@ class UserRepo {
             Resource.Error(e.message)
         }
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun getCategoriesData(email: String): Resource<ChartsData> {
+        return try {
+            suspendCancellableCoroutine { continuation ->
+                fireStore.collection(Collections.Users.value)
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+
+                        val userDoc = querySnapshot.documents.firstOrNull()
+
+                        if (userDoc == null) {
+                            continuation.resume(Resource.Error("User not found"), null)
+                            return@addOnSuccessListener
+                        }
+
+                        val now = LocalDate.now()
+                        val currentMonth = now.monthValue
+                        val currentYear = now.year
+
+                        val transactionsMap = userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
+
+                        val expenseMap = mutableMapOf<String, Int>()
+                        val incomeMap = mutableMapOf<String, Int>()
+
+                        for ((_, transaction) in transactionsMap) {
+                            val trans = transaction as? Map<*, *> ?: continue
+
+
+                            
+                            val timestamp = (trans["date"] as? Number)?.toLong() ?: continue
+
+                            val date = Instant.ofEpochMilli(timestamp)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+
+                            if (date.monthValue != currentMonth || date.year != currentYear) continue
+
+                            val type = (trans["type"] as? Number)?.toInt() ?: continue
+                            val categoryName = (trans["categoryName"] as? String)?.takeIf { it.isNotBlank() } ?: "Other"
+
+                            if (type == 1) {
+                                // Expense → +10 per transaction
+                                expenseMap[categoryName] = (expenseMap[categoryName] ?: 0) + 10
+                            } else if (type == 0) {
+                                // Income → just sum amount
+                                val amount = (trans["amount"] as? Number)?.toInt() ?: continue
+                                incomeMap[categoryName] = (incomeMap[categoryName] ?: 0) + amount
+                            }
+                        }
+
+                        val expenseData = expenseMap.map { CategoryData(name = it.key, value = it.value) }
+                        val incomeData = incomeMap.map { CategoryData(name = it.key, value = it.value) }
+
+                        continuation.resume(Resource.Success(ChartsData(incomeData, expenseData)), null)
+                    }
+                    .addOnFailureListener { continuation.resumeWithException(it) }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.message)
+        }
+    }
+
+
 
 
 }

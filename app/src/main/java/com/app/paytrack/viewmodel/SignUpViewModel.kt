@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.paytrack.model.User
 import com.app.paytrack.model.repo.AuthRepo
-import com.app.paytrack.model.SignInResult
+import com.app.paytrack.view.components.SignInResult
 import com.app.paytrack.model.SignInState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

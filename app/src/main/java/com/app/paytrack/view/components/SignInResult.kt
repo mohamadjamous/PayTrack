@@ -1,4 +1,4 @@
-package com.app.paytrack.model
+package com.app.paytrack.view.components
 
 data class SignInResult(
     val data: UserData?,

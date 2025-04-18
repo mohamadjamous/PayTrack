@@ -1,6 +1,8 @@
-package com.app.paytrack.model
+package com.app.paytrack.view.components
 
 import com.app.paytrack.R
+import com.app.paytrack.model.NavigationItem
+import com.app.paytrack.model.Screen
 
 val navigationItems = listOf(
     NavigationItem(
