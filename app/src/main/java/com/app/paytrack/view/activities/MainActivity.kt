@@ -34,10 +34,12 @@ class MainActivity : ComponentActivity() {
             val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
 
             PayTrackTheme(isDarkTheme = isDarkTheme) {
+
                 RootNavGraph(
                     navController = rememberNavController(),
                     googleAuthUiClient = googleAuthUiClient,
-                    onToggleTheme = { themeViewModel.toggleTheme() }
+                    onToggleTheme = { themeViewModel.toggleTheme() },
+                    isDarkTheme = themeViewModel.isDarkTheme.value
                 )
             }
         }

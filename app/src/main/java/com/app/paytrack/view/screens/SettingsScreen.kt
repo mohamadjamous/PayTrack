@@ -51,9 +51,10 @@ fun SettingsScreen(
     onBackClick: () -> Unit,
     viewModel: SettingsViewModel,
     onToggleTheme: () -> Unit,
+    isDarkTheme: Boolean
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
-    var darkModeEnabled by remember { mutableStateOf(false) }
+    var darkModeEnabled by remember { mutableStateOf(isDarkTheme) }
     val context = LocalContext.current
     val versionName = try {
         context.packageManager.getPackageInfo(context.packageName, 0).versionName
@@ -212,6 +213,7 @@ fun SettingsScreenPreview(modifier: Modifier = Modifier) {
     SettingsScreen(
         onBackClick = {},
         viewModel = SettingsViewModel(),
-        onToggleTheme = {}
+        onToggleTheme = {},
+        isDarkTheme = false
     )
 }

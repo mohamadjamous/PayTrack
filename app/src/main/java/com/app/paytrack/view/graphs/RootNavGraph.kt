@@ -67,7 +67,8 @@ fun RootNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     googleAuthUiClient: GoogleAuthUiClient,
-    onToggleTheme : () -> Unit
+    onToggleTheme : () -> Unit,
+    isDarkTheme : Boolean
 ) {
 
     val context = LocalContext.current
@@ -380,7 +381,8 @@ fun RootNavGraph(
                         viewModel = viewModel,
                         onToggleTheme = {
                             onToggleTheme()
-                        }
+                        },
+                        isDarkTheme = isDarkTheme
                     )
                 }
 
