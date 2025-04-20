@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -89,7 +90,7 @@ fun CreateAccountScreen(
                 text = stringResource(id = R.string.new_account),
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp,
-                color = colorResource(id = R.color.dark_green)
+                color = MaterialTheme.colorScheme.primary
             )
 
 
@@ -97,7 +98,7 @@ fun CreateAccountScreen(
                 modifier = Modifier.padding(top = 20.dp),
                 text = stringResource(id = R.string.new_account_desc),
                 fontSize = 18.sp,
-                color = colorResource(id = R.color.dark_green)
+                color = MaterialTheme.colorScheme.primary
             )
 
             Column(

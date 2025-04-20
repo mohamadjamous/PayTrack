@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.compose.compiler)
-//    id("com.google.devtools.ksp")
-//    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -85,7 +83,6 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.google.dagger:hilt-android:2.56.1")
-//    ksp("com.google.dagger:hilt-android-compiler:2.56.1")
 
     implementation("androidx.work:work-runtime-ktx:2.8.1")
 

@@ -83,32 +83,26 @@ class SignInViewModel : ViewModel() {
         viewModelScope.launch {
 
             // Check email exists in FireStore
-            val exists = repo.checkEmailInAuth(email = email)
+
 
             // Reset state before starting sign-in process
             _state.value = SignInState()
+            
 
-            if (!exists) {
+            val result = repo.sendPasswordResetEmail(email)
 
-                _state.value = SignInState(
-                     isSignInSuccessful = false,
-                    passwordLinkError = "Email address is not registered")
+            if (result) {
+
+                _state.value = SignInState(isPasswordLinkSuccessful = true)
             } else {
-                val result = repo.sendPasswordResetEmail(email)
-
-                if (result) {
-
-                    _state.value = SignInState(isPasswordLinkSuccessful = true)
-                } else {
-                    _state.value = SignInState(isPasswordLinkSuccessful = false)
-                    _state.value =
-                        SignInState(passwordLinkError = "Something went wrong while sending link")
-                }
+                _state.value = SignInState(isPasswordLinkSuccessful = false)
+                _state.value =
+                    SignInState(passwordLinkError = "Something went wrong while sending link")
             }
+
         }
 
     }
-
 
 
     fun onSignInCancelled() {

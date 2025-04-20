@@ -144,6 +144,7 @@ class AuthRepo {
             val result = FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email).await()
             result.signInMethods?.isNotEmpty() == true
         } catch (e: Exception) {
+            println("ErrorfetchSignInMethodsForEmail: ${e.message}")
             false
         }
     }

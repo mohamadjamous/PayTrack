@@ -61,7 +61,7 @@ fun AccountsBox(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(color = MaterialTheme.colorScheme.background),
+            .background(color = MaterialTheme.colorScheme.primaryContainer),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -72,7 +72,7 @@ fun AccountsBox(
                 text = stringResource(id = R.string.accounts),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Image(
                 modifier = Modifier
@@ -105,7 +105,7 @@ fun AccountsBox(
                 text = stringResource(id = R.string.add),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
 
@@ -139,13 +139,13 @@ fun AccountsBox(
 
     if (showDialog) {
         AlertDialog(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             onDismissRequest = { showDialog = false },
             title = {
                 Text(
                     stringResource(id = R.string.add_account),
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             },
             text = {

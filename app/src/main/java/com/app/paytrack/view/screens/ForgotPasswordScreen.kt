@@ -106,7 +106,7 @@ fun ForgotPasswordScreen(
                         .fillMaxWidth()
                         .padding(start = 70.dp),
                     text = stringResource(id = R.string.forgot_password_1),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp
                 )
