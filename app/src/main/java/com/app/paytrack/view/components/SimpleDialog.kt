@@ -18,10 +18,10 @@ fun SimpleDialog(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    // Dialog Box
+
     AlertDialog(
-        containerColor = MaterialTheme.colorScheme.surface,
-        onDismissRequest = { onCancel() }, // Dismiss on outside click
+        containerColor = MaterialTheme.colorScheme.background,
+        onDismissRequest = { onCancel() },
         title = {
             Text(text = stringResource(id = R.string.delete_account), style = MaterialTheme.typography.headlineLarge)
         },

@@ -86,7 +86,6 @@ fun HomeScreen(
     LaunchedEffect(balanceState.value) {
         balance = balanceState.value
         showBalanceProgress = false
-//        viewModel.resetBalanceState()
     }
 
     // Show error message if update fails
@@ -135,7 +134,7 @@ fun HomeScreen(
         when (mostUsedCategories) {
 
             is Resource.Loading -> {
-                // Show loading log or trigger something
+
                 showCategoriesProgress = true
             }
 
@@ -200,7 +199,6 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(top = 20.dp)
             ) {
-                // Centered Text
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -242,16 +240,6 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
-//                    IconButton(
-//                        onClick = { /* your logic */ }
-//                    ) {
-//                        Icon(
-//                            modifier = Modifier.size(30.dp),
-//                            painter = painterResource(id = R.drawable.notification),
-//                            contentDescription = null,
-//                            tint = Color.Unspecified
-//                        )
-//                    }
 
                     IconButton(
                         onClick = {
@@ -401,11 +389,11 @@ fun HomeScreen(
         FloatingActionButton(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
-                .align(Alignment.BottomEnd) // Align the FAB to the bottom right
+                .align(Alignment.BottomEnd)
                 .padding(
                     bottom = 100.dp,
                     end = 15.dp
-                ), // Optional padding to give some space from edges
+                ),
             onClick = {
                 isBottomSheetVisible = true
             },

@@ -4,14 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
 import com.app.paytrack.model.repo.UserRepo
-import com.app.paytrack.utlis.ReminderWorker
 import com.app.paytrack.utlis.Resource
 import com.app.paytrack.utlis.ThemePreference
 import com.google.firebase.auth.FirebaseAuth
@@ -19,16 +14,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 class SettingsViewModel(
     private val context: Context
 ): ViewModel() {
-
-
-    // notifications state
-    private val _isReminderEnabled = MutableStateFlow(true)
-    val isReminderEnabled: StateFlow<Boolean> = _isReminderEnabled.asStateFlow()
 
     val repo = UserRepo()
 
@@ -55,32 +44,6 @@ class SettingsViewModel(
     }
 
 
-
-
-    fun loadReminderEnabled() {
-        viewModelScope.launch {
-            ThemePreference.getReminderToggle(context)
-                .collect { enabled ->
-                    _isReminderEnabled.value = enabled
-                }
-        }
-    }
-
-    fun onReminderToggled(enabled: Boolean) {
-
-        val email = FirebaseAuth.getInstance().currentUser?.email ?: return
-
-        viewModelScope.launch {
-            val updateResult = repo.updateReminderEnabled(email, enabled)
-            if (updateResult is Resource.Success) {
-                ThemePreference.setReminderToggle(context, enabled)
-                _isReminderEnabled.value = enabled
-                Toast.makeText(context, "Reminder setting updated", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Failed to update", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
 
 

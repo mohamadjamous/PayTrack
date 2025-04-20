@@ -79,11 +79,6 @@ fun CategoryItemMain(
                     color = Color.White,
                     fontSize = 18.sp
                 )
-
-//                Text(
-//                    text = desc,
-//                    color = Color.White
-//                )
             }
 
 

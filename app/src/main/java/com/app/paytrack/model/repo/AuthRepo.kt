@@ -37,18 +37,18 @@ class AuthRepo {
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener {
                         println("Register success")
-                        continuation.resume(true) // Resume with success
+                        continuation.resume(true)
                     }
                     .addOnFailureListener {
                         println("Register failure: ${it.message}")
-                        continuation.resume(false) // Resume with failure
+                        continuation.resume(false)
                     }
             }
 
             if (authResult) {
-                loginUser(email, password) // Waits for this to complete
+                loginUser(email, password)
             } else {
-                false // Registration failed, so don't attempt login
+                false
             }
 
         } catch (e: Exception) {
@@ -122,18 +122,18 @@ class AuthRepo {
                     .add(user)
                     .addOnSuccessListener {
                         println("User saved successfully")
-                        continuation.resume(true) // Resume with success
+                        continuation.resume(true)
                     }
                     .addOnFailureListener {
                         println("Error saving user: ${it.message}")
                         if (continuation.isActive) {
-                            continuation.resumeWithException(it) // Throw exception for proper error handling
+                            continuation.resumeWithException(it)
                         }
                     }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            if (e is CancellationException) throw e // Properly handle coroutine cancellation
+            if (e is CancellationException) throw e
             println("Error saving user: ${e.message}")
             false
         }
@@ -142,9 +142,9 @@ class AuthRepo {
     suspend fun checkEmailInAuth(email: String): Boolean {
         return try {
             val result = FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email).await()
-            result.signInMethods?.isNotEmpty() == true // True if email exists
+            result.signInMethods?.isNotEmpty() == true
         } catch (e: Exception) {
-            false // Handle errors gracefully
+            false
         }
     }
 

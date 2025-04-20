@@ -59,7 +59,7 @@ class HomeViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 // Log or notify UI of the error
-                _stateBalance.value = 0.0 // or any fallback value
+                _stateBalance.value = 0.0
             }
         }
     }

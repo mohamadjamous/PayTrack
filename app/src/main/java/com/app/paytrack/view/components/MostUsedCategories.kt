@@ -32,27 +32,5 @@ fun MostUsedCategories(
 @Composable
 fun MostUsedCategoriesPreview(modifier: Modifier = Modifier) {
 
-//    val list = listOf(
-//        Category(
-//            painter = painterResource(id = R.drawable.person),
-//            "Lorem",
-//            value = "7,000€"
-//        ),
-//        Category(
-//            painter = painterResource(id = R.drawable.person),
-//            "Lorem",
-//            value = "7,000€"
-//        ),
-//        Category(
-//            painter = painterResource(id = R.drawable.person),
-//            "Lorem",
-//            value = "7,000€"
-//        ),
-//        Category(
-//            painter = painterResource(id = R.drawable.person),
-//            "Lorem",
-//            value = "7,000€"
-//        )
-//    )
-//    MostUsedCategories(list = list)
+
 }

@@ -119,9 +119,9 @@ class SignUpViewModel : ViewModel() {
 
             // If the save operation is successful
             if (result) {
-                onSuccess()  // Trigger the success callback
+                onSuccess()
             } else {
-                onFailure()  // Trigger the failure callback
+                onFailure()
             }
         }
     }

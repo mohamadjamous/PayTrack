@@ -108,7 +108,7 @@ fun RootNavGraph(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            // Only show BottomNavigationBar when in Graph.Main
+
             if (isMainScreen) {
                 BottomNavigationBar(navController = navController)
             }
@@ -116,7 +116,6 @@ fun RootNavGraph(
     ) { innerPadding ->
 
         // NavHost with conditional start destination based on `isMainScreen`
-
         NavHost(
             navController = navController,
             startDestination = if (isMainScreen) {
@@ -193,7 +192,7 @@ fun RootNavGraph(
                             isMainScreen = true
                             Toast.makeText(context, "Sign in successful!", Toast.LENGTH_LONG).show()
                             navController.navigate(Graph.Main) {
-                                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                                popUpTo(Graph.Auth) { inclusive = true }
                             }
                         },
                         viewModel = viewModel
@@ -276,7 +275,7 @@ fun RootNavGraph(
 
                             isMainScreen = true
                             navController.navigate(Graph.Main) {
-                                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                                popUpTo(Graph.Auth) { inclusive = true }
                             }
                         }
                     )
@@ -307,7 +306,6 @@ fun RootNavGraph(
                         date = date,
                         viewModel = viewModel,
                         onSettingsClick = {
-//                            isMainScreen = true
                             navController.navigate(Screen.Settings)
                         }
                     )
@@ -340,7 +338,7 @@ fun RootNavGraph(
 
                             isMainScreen = false
                             navController.navigate(Graph.Auth) {
-                                popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                                popUpTo(Graph.Auth) { inclusive = true }
                             }
 
                         },
@@ -358,7 +356,7 @@ fun RootNavGraph(
                                 navController.navigate(Graph.Auth) {
                                     popUpTo(Graph.Auth) {
                                         inclusive = true
-                                    } // Prevent back navigation
+                                    }
                                 }
                             }
                         },
@@ -375,7 +373,7 @@ fun RootNavGraph(
 
                     SettingsScreen(
                         onBackClick = {
-//                        isMainScreen = false
+
                             navController.popBackStack()
                         },
                         viewModel = viewModel,

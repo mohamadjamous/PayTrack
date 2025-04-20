@@ -47,8 +47,8 @@ fun OnBoardingScreen(
     val list = remember {
         listOf(
             OnBoardingItem(
-                painter = R.drawable.icon_5, // Store only resource ID
-                title = R.string.payment_insights, // Store only resource ID
+                painter = R.drawable.icon_5,
+                title = R.string.payment_insights,
                 type = 0
             ),
             OnBoardingItem(
@@ -117,7 +117,7 @@ fun OnBoardingScreen(
                         modifier = Modifier
                             .padding(top = 25.dp)
                             .size(20.dp),
-                        painter = painterResource(id = item.painter), // Load inside Composable
+                        painter = painterResource(id = item.painter),
                         contentDescription = null
                     )
 
@@ -125,7 +125,7 @@ fun OnBoardingScreen(
 
                     Text(
                         modifier = Modifier.padding(bottom = 25.dp),
-                        text = stringResource(id = item.title), // Load inside Composable
+                        text = stringResource(id = item.title),
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )

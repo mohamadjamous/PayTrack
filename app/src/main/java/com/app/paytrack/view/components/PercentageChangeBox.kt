@@ -34,7 +34,7 @@ fun PercentageChangeBox(
             textAlign = TextAlign.End,
             modifier = Modifier
                 .background(
-                    color = Color.Black.copy(alpha = 0.6f), // Faded black
+                    color = Color.Black.copy(alpha = 0.6f),
                     shape = RoundedCornerShape(20.dp)
                 )
                 .padding(horizontal = 12.dp, vertical = 6.dp)

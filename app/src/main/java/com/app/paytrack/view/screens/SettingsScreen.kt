@@ -56,20 +56,12 @@ fun SettingsScreen(
     onToggleTheme: () -> Unit,
     isDarkTheme: Boolean
 ) {
-    var notificationsEnabled by remember { mutableStateOf(true) }
     var darkModeEnabled by remember { mutableStateOf(isDarkTheme) }
     val context = LocalContext.current
     val versionName = try {
         context.packageManager.getPackageInfo(context.packageName, 0).versionName
     } catch (e: Exception) {
         "Unknown"
-    }
-
-    val reminderEnabled by viewModel.isReminderEnabled.collectAsState()
-
-    // This should be called with the user's email when screen loads
-    LaunchedEffect(Unit) {
-        viewModel.loadReminderEnabled()
     }
 
 
@@ -95,16 +87,6 @@ fun SettingsScreen(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        // Notification toggle
-//        SettingToggleItem(
-//            icon = Icons.Outlined.Notifications,
-//            title = "Notifications",
-//            isChecked = reminderEnabled,
-//            onToggle = { viewModel.onReminderToggled(it) }
-//        )
-
-
 
         SettingItem(
             icon = Icons.Outlined.Share,

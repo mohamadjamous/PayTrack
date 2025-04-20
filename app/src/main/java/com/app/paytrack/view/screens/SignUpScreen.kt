@@ -87,7 +87,7 @@ fun SignUpScreen(
     // Handle sign up error
     LaunchedEffect(state.signInError) {
         state.signInError?.let { error ->
-            showDialog = false  // Hide dialog on error
+            showDialog = false
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
     }
@@ -105,7 +105,7 @@ fun SignUpScreen(
                 val isRegistered = AuthRepo().checkEmailExists(email)
 
                 if (!isRegistered) {
-                    // Save user to Firestore first
+
                     viewModel.saveUser(
                         email = email,
                         name = firebaseUser.displayName ?: "",
@@ -131,7 +131,7 @@ fun SignUpScreen(
             if (!state.isGoogleSignIn) {
                 Toast.makeText(context, "Sign up successful!", Toast.LENGTH_LONG).show()
                 navController.navigate(Screen.CreateAccount) {
-                    popUpTo(Graph.Auth) { inclusive = true } // Prevent back navigation
+                    popUpTo(Graph.Auth) { inclusive = true }
                 }
             }
 

@@ -6,6 +6,6 @@ data class SignInState(
     val isPasswordLinkSuccessful: Boolean = false,
     val passwordLinkError: String? = null,
     val isGoogleSignIn: Boolean = false,
-    val isSignInCancelled: Boolean = false // Add this field
+    val isSignInCancelled: Boolean = false
 
 )
