@@ -97,13 +97,12 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         // Notification toggle
-        SettingToggleItem(
-            icon = Icons.Outlined.Notifications,
-            title = "Notifications",
-            isChecked = reminderEnabled,
-            onToggle = { viewModel.onReminderToggled(it) }
-        )
-
+//        SettingToggleItem(
+//            icon = Icons.Outlined.Notifications,
+//            title = "Notifications",
+//            isChecked = reminderEnabled,
+//            onToggle = { viewModel.onReminderToggled(it) }
+//        )
 
 
 

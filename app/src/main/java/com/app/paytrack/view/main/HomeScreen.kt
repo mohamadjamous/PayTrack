@@ -237,16 +237,16 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
-                    IconButton(
-                        onClick = { /* your logic */ }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(30.dp),
-                            painter = painterResource(id = R.drawable.notification),
-                            contentDescription = null,
-                            tint = Color.Unspecified
-                        )
-                    }
+//                    IconButton(
+//                        onClick = { /* your logic */ }
+//                    ) {
+//                        Icon(
+//                            modifier = Modifier.size(30.dp),
+//                            painter = painterResource(id = R.drawable.notification),
+//                            contentDescription = null,
+//                            tint = Color.Unspecified
+//                        )
+//                    }
 
                     IconButton(
                         onClick = {
