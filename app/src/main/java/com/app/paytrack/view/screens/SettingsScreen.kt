@@ -162,7 +162,7 @@ fun SettingItem(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = colorResource(id = R.color.dark_green)
+                tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(text = title, fontSize = 16.sp)
@@ -194,7 +194,7 @@ fun SettingToggleItem(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = colorResource(id = R.color.dark_green)
+                tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(text = title, fontSize = 16.sp)

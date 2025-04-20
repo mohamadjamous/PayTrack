@@ -19,6 +19,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.paytrack.R
 import com.app.paytrack.model.Account
+import com.app.paytrack.view.ui.theme.PayTrackTheme
+import com.app.paytrack.view.ui.theme.ThemeColors
 
 
 @Composable
@@ -58,7 +61,7 @@ fun AccountsBox(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(color = colorResource(id = R.color.dark_green)),
+            .background(color = MaterialTheme.colorScheme.background),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -69,7 +72,7 @@ fun AccountsBox(
                 text = stringResource(id = R.string.accounts),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.primary
             )
             Image(
                 modifier = Modifier
@@ -83,7 +86,7 @@ fun AccountsBox(
         Divider(
             modifier = Modifier.padding(bottom = 20.dp),
             thickness = 2.dp,
-            color = colorResource(id = R.color.divider)
+            color = MaterialTheme.colorScheme.surface
         )
 
         Row(
@@ -102,7 +105,7 @@ fun AccountsBox(
                 text = stringResource(id = R.string.add),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = colorResource(id = R.color.cyan)
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -136,11 +139,13 @@ fun AccountsBox(
 
     if (showDialog) {
         AlertDialog(
+            containerColor = MaterialTheme.colorScheme.background,
             onDismissRequest = { showDialog = false },
             title = {
                 Text(
                     stringResource(id = R.string.add_account),
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             },
             text = {
@@ -196,9 +201,12 @@ fun AccountsBox(
 @Preview(showSystemUi = true)
 @Composable
 fun AccountsBoxPreview(modifier: Modifier = Modifier) {
+
+    PayTrackTheme {
     AccountsBox(accounts = listOf(Account("", 0.0)), onAddAccount = {
 
     }) {
 
+    }
     }
 }

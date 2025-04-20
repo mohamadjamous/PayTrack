@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -105,7 +106,7 @@ fun ForgotPasswordScreen(
                         .fillMaxWidth()
                         .padding(start = 70.dp),
                     text = stringResource(id = R.string.forgot_password_1),
-                    color = colorResource(id = R.color.dark_green),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp
                 )
@@ -124,7 +125,7 @@ fun ForgotPasswordScreen(
                         .fillMaxWidth()
                         .padding(top = 10.dp),
                     text = stringResource(id = R.string.forgot_password_desc),
-                    color = colorResource(id = R.color.gray),
+                    color = MaterialTheme.colorScheme.surface,
                     textAlign = TextAlign.Start,
                     fontSize = 17.sp
                 )

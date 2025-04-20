@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,7 +36,7 @@ fun CustomButton(
             .fillMaxWidth(),
         onClick = { onClick() },
         colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.dark_green)
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         shape = RoundedCornerShape(12.dp)
     ){

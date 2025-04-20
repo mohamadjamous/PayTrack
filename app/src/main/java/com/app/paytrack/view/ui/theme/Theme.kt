@@ -10,14 +10,16 @@ private val DarkColorScheme = darkColorScheme(
     primary = ThemeColors.Night.primary,
     onPrimary = ThemeColors.Night.text,
     surface = ThemeColors.Night.surface,
-    background = ThemeColors.Night.background
+    background = ThemeColors.Night.background,
+    primaryContainer = ThemeColors.Night.container
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = ThemeColors.Day.primary,
     onPrimary = ThemeColors.Day.text,
     surface = ThemeColors.Day.surface,
-    background = ThemeColors.Day.background
+    background = ThemeColors.Day.background,
+    primaryContainer = ThemeColors.Day.container
 )
 
 @Composable
@@ -25,14 +27,11 @@ fun PayTrackTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-
-    val colorScheme = when {
-        else -> LightColorScheme
-    }
+    val colorScheme = if (isDarkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
+        colorScheme = colorScheme,
         typography = Typography,
-        content = content,
-        colorScheme = if(isDarkTheme) DarkColorScheme else LightColorScheme
+        content = content
     )
 }

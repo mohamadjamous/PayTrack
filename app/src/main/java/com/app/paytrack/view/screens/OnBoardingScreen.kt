@@ -65,16 +65,6 @@ fun OnBoardingScreen(
                 painter = R.drawable.icon_2,
                 title = R.string.full_control,
                 type = 0
-            ),
-            OnBoardingItem(
-                painter = R.drawable.icon_1,
-                title = R.string.hassle_free,
-                type = 0
-            ),
-            OnBoardingItem(
-                painter = R.drawable.icon_6,
-                title = R.string.offline_access,
-                type = 1
             )
         )
     }

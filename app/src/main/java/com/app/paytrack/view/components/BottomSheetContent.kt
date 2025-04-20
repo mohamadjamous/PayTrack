@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -58,7 +59,7 @@ fun BottomSheetContent(
             .padding(10.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(color = colorResource(id = R.color.green)),
+            .background(color = MaterialTheme.colorScheme.primary),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -66,12 +67,12 @@ fun BottomSheetContent(
 
         TabRow(
             selectedTabIndex = selectedTab,
-            containerColor = Color.Transparent,
+            containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White,
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                    color = colorResource(id = R.color.dark_green)
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         ) {
@@ -89,14 +90,14 @@ fun BottomSheetContent(
         when (selectedTab) {
             0 -> { // Income
 
-
                 CustomTextField(
                     value = incomeAmount,
                     onValueChange = {
                         if (it.all { char -> char.isDigit() }) incomeAmount = it
                     },
                     hint = "Amount",
-                    leadingIcon1 = { Text("$", fontWeight = FontWeight.Bold) },
+                    leadingIcon1 = { Text("$", fontWeight = FontWeight.Bold,
+                         color = MaterialTheme.colorScheme.primary) },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 )
 

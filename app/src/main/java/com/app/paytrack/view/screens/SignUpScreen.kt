@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -159,7 +160,7 @@ fun SignUpScreen(
                 text = stringResource(id = R.string.sign_up),
                 fontWeight = FontWeight.Bold,
                 fontSize = 35.sp,
-                color = colorResource(id = R.color.dark_green)
+                color = MaterialTheme.colorScheme.onPrimary
             )
 
             Column(
@@ -258,7 +259,7 @@ fun SignUpScreen(
                     modifier = Modifier
                         .padding(top = 10.dp),
                     text = stringResource(id = R.string.sign_in_with),
-                    color = colorResource(id = R.color.gray),
+                    color = MaterialTheme.colorScheme.surface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp
                 )
@@ -286,7 +287,7 @@ fun SignUpScreen(
                     Text(
                         modifier = Modifier,
                         text = stringResource(id = R.string.already_have_account),
-                        color = colorResource(id = R.color.gray),
+                        color = MaterialTheme.colorScheme.surface,
                         fontSize = 17.sp
                     )
 
@@ -297,7 +298,7 @@ fun SignUpScreen(
                                 navController.popBackStack()
                             },
                         text = stringResource(id = R.string.sign_in),
-                        color = colorResource(id = R.color.gray),
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp
                     )

@@ -21,6 +21,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -61,6 +62,7 @@ fun BottomSheet(
     }
 
     ModalBottomSheet(
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxHeight(),
         onDismissRequest = {
             scope.launch { sheetState.hide() }.invokeOnCompletion {
@@ -90,7 +92,7 @@ fun BottomSheet(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close Bottom Sheet",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }

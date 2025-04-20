@@ -3,6 +3,7 @@ package com.app.paytrack.view.main
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -180,7 +182,10 @@ fun HomeScreen(
     }
 
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+    ) {
 
         Column(
             modifier = Modifier
@@ -211,7 +216,7 @@ fun HomeScreen(
                             modifier = Modifier.fillMaxWidth(),
                             text = "$$balance",
                             fontWeight = FontWeight.Bold,
-                            color = colorResource(id = R.color.green),
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 27.sp,
                             textAlign = TextAlign.Center
                         )
@@ -224,10 +229,10 @@ fun HomeScreen(
                     }
 
                     Text(
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier.padding(top = 5.dp),
                         text = date,
-                        color = colorResource(id = R.color.dark_green),
-                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 15.sp,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -257,13 +262,13 @@ fun HomeScreen(
                             modifier = Modifier.size(30.dp),
                             painter = painterResource(id = R.drawable.settings),
                             contentDescription = null,
-                            tint = Color.Unspecified
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
 
 
@@ -274,7 +279,7 @@ fun HomeScreen(
                     text = stringResource(id = R.string.most_used_categories),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = colorResource(id = R.color.dark_green)
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
 
             }
@@ -329,7 +334,7 @@ fun HomeScreen(
                 text = stringResource(id = R.string.expenses_categories),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = colorResource(id = R.color.dark_green)
+                color = MaterialTheme.colorScheme.onPrimary
             )
 
 
@@ -389,11 +394,12 @@ fun HomeScreen(
                 text = stringResource(id = R.string.reading),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = colorResource(id = R.color.dark_green)
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
 
         FloatingActionButton(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
                 .align(Alignment.BottomEnd) // Align the FAB to the bottom right
                 .padding(
@@ -405,7 +411,7 @@ fun HomeScreen(
             },
             shape = CircleShape,
         ) {
-            Icon(Icons.Filled.Add, "Floating action button.", tint = Color.Black)
+            Icon(Icons.Filled.Add, "Floating action button.", tint = MaterialTheme.colorScheme.primary)
         }
 
 

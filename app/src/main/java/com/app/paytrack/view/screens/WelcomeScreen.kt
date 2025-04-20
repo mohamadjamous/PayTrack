@@ -1,6 +1,7 @@
 package com.app.paytrack.view.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,8 +37,10 @@ fun WelcomeScreen(
 ) {
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(10.dp),
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxSize().padding(10.dp)
+            .background(color = MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.Center,
+
     ) {
 
         Spacer(modifier = Modifier.weight(1f))
@@ -74,7 +78,8 @@ fun WelcomeScreen(
             fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            lineHeight = 50.sp
+            lineHeight = 50.sp,
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.weight(1f))

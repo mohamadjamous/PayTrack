@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 val Green = Color(0xFF26994F)
 val Black = Color(0xFF000000)
+val FadeBlack = Color(0xFF151514)
 val White = Color(0xFFFFFFFF)
 val DarkGreen = Color(0xFF002F21)
 val DarkGreen1 = Color(0xFF26994F)
@@ -16,19 +17,22 @@ sealed class ThemeColors(
     val background: Color,
     val surface: Color,
     val primary: Color,
-    val text: Color
+    val text: Color,
+    val container: Color
 ) {
     object Night : ThemeColors(
-        background = DarkGreen,
-        surface = Black,
+        background = FadeBlack,
+        surface = Gray,
         primary = Green,
-        text = White
+        text = White,
+        container = DarkGreen
     )
 
     object Day : ThemeColors(
         background = White,
         surface = Gray,
         primary = Green,
-        text = Black
+        text = Black,
+        container = DarkGreen
     )
 }

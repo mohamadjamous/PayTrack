@@ -20,6 +20,7 @@ fun SimpleDialog(
 ) {
     // Dialog Box
     AlertDialog(
+        containerColor = MaterialTheme.colorScheme.surface,
         onDismissRequest = { onCancel() }, // Dismiss on outside click
         title = {
             Text(text = stringResource(id = R.string.delete_account), style = MaterialTheme.typography.headlineLarge)

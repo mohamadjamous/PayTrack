@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -144,7 +145,7 @@ fun SignInScreen(
                 text = stringResource(id = R.string.sign_in),
                 fontWeight = FontWeight.Bold,
                 fontSize = 35.sp,
-                color = colorResource(id = R.color.dark_green)
+                color = MaterialTheme.colorScheme.onPrimary
             )
 
             Column(
@@ -184,7 +185,7 @@ fun SignInScreen(
                         navController.navigate(Screen.ForgotPassword)
                     },
                 text = stringResource(id = R.string.forgot_password),
-                color = colorResource(id = R.color.dark_green),
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold,
             )
 
@@ -227,7 +228,7 @@ fun SignInScreen(
                     modifier = Modifier
                         .padding(top = 10.dp),
                     text = stringResource(id = R.string.sign_in_with),
-                    color = colorResource(id = R.color.gray),
+                    color = MaterialTheme.colorScheme.surface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp
                 )
@@ -256,7 +257,7 @@ fun SignInScreen(
                         modifier = Modifier
                             .padding(top = 10.dp),
                         text = stringResource(id = R.string.dont_have_account),
-                        color = colorResource(id = R.color.gray),
+                        color = MaterialTheme.colorScheme.surface,
                         fontSize = 17.sp
                     )
 
@@ -267,7 +268,7 @@ fun SignInScreen(
                                 navController.navigate(Screen.SignUp)
                             },
                         text = stringResource(id = R.string.sign_up),
-                        color = colorResource(id = R.color.gray),
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp
                     )
@@ -296,7 +297,7 @@ fun OrDivider(modifier: Modifier = Modifier) {
 
         Text(
             text = "OR",
-            color = colorResource(id = R.color.dark_green),
+            color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.padding(horizontal = 8.dp),
             fontWeight = FontWeight.Bold,
             fontSize = 23.sp
