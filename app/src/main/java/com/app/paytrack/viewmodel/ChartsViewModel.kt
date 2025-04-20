@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ChartsViewModel: ViewModel() {
+class   ChartsViewModel: ViewModel() {
 
     private val _data = MutableStateFlow(ChartsData())
     var data = _data.asStateFlow()

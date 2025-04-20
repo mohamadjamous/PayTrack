@@ -24,6 +24,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.paytrack.R
+import com.app.paytrack.utlis.ThemePreference
 import com.app.paytrack.view.components.BackButton
 import com.app.paytrack.viewmodel.SettingsViewModel
 
@@ -61,6 +64,14 @@ fun SettingsScreen(
     } catch (e: Exception) {
         "Unknown"
     }
+
+    val reminderEnabled by viewModel.isReminderEnabled.collectAsState()
+
+    // This should be called with the user's email when screen loads
+    LaunchedEffect(Unit) {
+        viewModel.loadReminderEnabled()
+    }
+
 
     Column(
         modifier = modifier
@@ -89,9 +100,10 @@ fun SettingsScreen(
         SettingToggleItem(
             icon = Icons.Outlined.Notifications,
             title = "Notifications",
-            isChecked = notificationsEnabled,
-            onToggle = { notificationsEnabled = it }
+            isChecked = reminderEnabled,
+            onToggle = { viewModel.onReminderToggled(it) }
         )
+
 
 
 
@@ -212,7 +224,7 @@ fun SettingToggleItem(
 fun SettingsScreenPreview(modifier: Modifier = Modifier) {
     SettingsScreen(
         onBackClick = {},
-        viewModel = SettingsViewModel(),
+        viewModel = SettingsViewModel(context = LocalContext.current),
         onToggleTheme = {},
         isDarkTheme = false
     )

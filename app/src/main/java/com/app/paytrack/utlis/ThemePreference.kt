@@ -12,6 +12,7 @@ object ThemePreference {
     private val Context.dataStore by preferencesDataStore(name = "settings")
 
     private val DARK_MODE = booleanPreferencesKey("dark_mode")
+    private val REMINDER_TOGGLE = booleanPreferencesKey("reminder_enabled")
 
     suspend fun setDarkMode(context: Context, isDarkMode: Boolean) {
         context.dataStore.edit { preferences ->
@@ -20,7 +21,20 @@ object ThemePreference {
     }
 
     fun getDarkModeFlow(context: Context): Flow<Boolean> {
-        return context.dataStore.data
-            .map { preferences -> preferences[DARK_MODE] ?: false }
+        return context.dataStore.data.map { preferences ->
+            preferences[DARK_MODE] ?: false
+        }
+    }
+
+    suspend fun setReminderToggle(context: Context, isEnabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[REMINDER_TOGGLE] = isEnabled
+        }
+    }
+
+    fun getReminderToggle(context: Context): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[REMINDER_TOGGLE] ?: true
+        }
     }
 }

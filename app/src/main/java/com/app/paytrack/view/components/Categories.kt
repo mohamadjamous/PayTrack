@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,7 +25,7 @@ fun Categories(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(color = colorResource(id = R.color.dark_green_1)),
+            .background(color = MaterialTheme.colorScheme.primary),
     ) {
 
         list.take(6).forEach {
@@ -48,28 +49,5 @@ fun Categories(
 @Composable
 fun CategoriesPreview(modifier: Modifier = Modifier) {
 
-//    val list = listOf(
-//        Category(
-//            painter = painterResource(id = R.drawable.person),
-//            name = "Lorem",
-//            value = "7,000€",
-//            date = "June 7",
-//            desc = "Dum & Simple"
-//        ),
-//        Category(
-//            painter = painterResource(id = R.drawable.person),
-//            name = "Lorem",
-//            value = "7,000€",
-//            date = "June 7",
-//            desc = "Dum & Simple"
-//        ),
-//        Category(
-//            painter = painterResource(id = R.drawable.person),
-//            name = "Lorem",
-//            value = "7,000€",
-//            date = "June 7",
-//            desc = "Dum & Simple"
-//        )
-//    )
-//    Categories(list = list)
+
 }

@@ -371,7 +371,7 @@ fun RootNavGraph(
                 ) {
 
                     // init view model
-                    val viewModel = viewModel<SettingsViewModel>()
+                    val viewModel = SettingsViewModel(context = LocalContext.current)
 
                     SettingsScreen(
                         onBackClick = {

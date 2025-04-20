@@ -1,9 +1,13 @@
 package com.app.paytrack.model.repo
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.app.paytrack.R
 import com.app.paytrack.model.Account
 import com.app.paytrack.model.Category
@@ -12,12 +16,17 @@ import com.app.paytrack.model.ChartsData
 import com.app.paytrack.model.Collections
 import com.app.paytrack.model.MonthData
 import com.app.paytrack.model.ProfileState
+import com.app.paytrack.model.Reminder
 import com.app.paytrack.model.User
+import com.app.paytrack.utlis.ReminderWorker
 import com.app.paytrack.utlis.Resource
+import com.app.paytrack.utlis.ThemePreference
 import com.app.paytrack.utlis.categories
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -25,6 +34,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -766,7 +776,8 @@ class UserRepo {
                         val currentMonth = now.monthValue
                         val currentYear = now.year
 
-                        val transactionsMap = userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
+                        val transactionsMap =
+                            userDoc.get("transactions") as? Map<*, *> ?: emptyMap<Any, Any>()
 
                         val expenseMap = mutableMapOf<String, Int>()
                         val incomeMap = mutableMapOf<String, Int>()
@@ -783,7 +794,9 @@ class UserRepo {
                             if (date.monthValue != currentMonth || date.year != currentYear) continue
 
                             val type = (trans["type"] as? Number)?.toInt() ?: continue
-                            val categoryName = (trans["categoryName"] as? String)?.takeIf { it.isNotBlank() } ?: "Other"
+                            val categoryName =
+                                (trans["categoryName"] as? String)?.takeIf { it.isNotBlank() }
+                                    ?: "Other"
 
                             if (type == 1) {
                                 // Expense → +10 per transaction
@@ -795,10 +808,15 @@ class UserRepo {
                             }
                         }
 
-                        val expenseData = expenseMap.map { CategoryData(name = it.key, value = it.value) }
-                        val incomeData = incomeMap.map { CategoryData(name = it.key, value = it.value) }
+                        val expenseData =
+                            expenseMap.map { CategoryData(name = it.key, value = it.value) }
+                        val incomeData =
+                            incomeMap.map { CategoryData(name = it.key, value = it.value) }
 
-                        continuation.resume(Resource.Success(ChartsData(incomeData, expenseData)), null)
+                        continuation.resume(
+                            Resource.Success(ChartsData(incomeData, expenseData)),
+                            null
+                        )
                     }
                     .addOnFailureListener { continuation.resumeWithException(it) }
             }
@@ -808,6 +826,90 @@ class UserRepo {
         }
     }
 
+
+    suspend fun fetchRemindersAndSchedule(
+        context: Context,
+        email: String
+    ): Resource<Unit> {
+        return try {
+            val snapshot = fireStore.collection("Users")
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .await()
+
+            val userDoc = snapshot.documents.firstOrNull()
+                ?: return Resource.Error("User not found")
+
+            val reminders = userDoc.get("reminders") as? List<Map<String, Any>>
+                ?: return Resource.Error("No reminders found")
+
+            // Check user preference before scheduling
+            val isEnabled = ThemePreference.getReminderToggle(context).first()
+            if (isEnabled) {
+                reminders.forEach { reminder ->
+                    val message = reminder["message"] as? String ?: return@forEach
+                    val timestamp = reminder["timestamp"] as? Long ?: return@forEach
+                    val enabled = reminder["enabled"] as? Boolean ?: true
+
+                    if (enabled) {
+                        scheduleReminder(context, message, timestamp)
+                    }
+                }
+            }
+
+            Resource.Success(Unit)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.message ?: "An error occurred")
+        }
+    }
+
+
+    fun scheduleReminder(
+        context: Context,
+        message: String,
+        timeInMillis: Long
+    ) {
+        val data = workDataOf(
+            "title" to "PayTrack Reminder",
+            "message" to message
+        )
+
+        val delay = timeInMillis - System.currentTimeMillis()
+        if (delay <= 0) return
+
+        val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+            .setInputData(data)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(workRequest)
+    }
+
+    suspend fun updateReminderEnabled(email: String, enabled: Boolean): Resource<Unit> {
+        return try {
+            val querySnapshot = fireStore.collection(Collections.Users.value)
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .await()
+
+            val doc = querySnapshot.documents.firstOrNull()
+                ?: return Resource.Error("User not found")
+
+            val currentReminders = doc.get("reminders") as? List<Map<String, Any>> ?: emptyList()
+            val updatedReminders = currentReminders.map { reminder ->
+                reminder.toMutableMap().apply { this["enabled"] = enabled }
+            }
+
+            doc.reference.update("reminders", updatedReminders).await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Unknown error")
+        }
+    }
 
 
 
