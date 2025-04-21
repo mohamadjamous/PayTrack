@@ -87,7 +87,7 @@ class SignInViewModel : ViewModel() {
 
             // Reset state before starting sign-in process
             _state.value = SignInState()
-            
+
 
             val result = repo.sendPasswordResetEmail(email)
 

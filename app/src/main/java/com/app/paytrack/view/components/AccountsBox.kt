@@ -72,7 +72,7 @@ fun AccountsBox(
                 text = stringResource(id = R.string.accounts),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = Color.White
             )
             Image(
                 modifier = Modifier
@@ -105,7 +105,7 @@ fun AccountsBox(
                 text = stringResource(id = R.string.add),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = Color.White
             )
         }
 
@@ -145,7 +145,7 @@ fun AccountsBox(
                 Text(
                     stringResource(id = R.string.add_account),
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = Color.White
                 )
             },
             text = {
